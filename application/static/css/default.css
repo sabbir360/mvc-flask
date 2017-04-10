@@ -1,0 +1,24 @@
+ul.errors {
+    list-style-type: none;
+    padding: 0;
+    color: red;
+}
+
+.flash-message {
+    margin-top: 60px;
+    border: 2px solid;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.flash-message-warning {
+    border-color: yellowgreen;
+}
+
+.flash-message-info {
+    border-color: green;
+}
+
+.flash-message-error {
+    border-color: red;
+}

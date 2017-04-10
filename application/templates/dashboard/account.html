@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+<!-- main content -->
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h1>Account</h1>
+        <p>Manage tables and get URLs</p>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Tables</h2>
+            <!--start of table-->
+            <table class="table table-stripped">
+                <tr>
+                    <th>No.</th>
+                    <th>URL</th>
+                    <th>Action</th>
+                </tr>
+
+                <!-- check for data available or not -->
+                {% if tables %}
+                <!-- iteration -->
+                {% for table in tables %}
+                <tr>
+                    <td>{{table.number}}</td>
+                    <td>{{table.url}}</td>
+                    <td>
+                        <form class="form-inline" action="/account/deletetable">
+                            <input type="submit" value="Delete" class="form-control" />
+                            <input type="hidden" name="tableid" value="{{table._id}}" />
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                <!-- iteration -->
+                {% endif %}
+                <!-- check for data available or not -->
+
+            </table>
+            <!--end table-->
+            <h2>Create new table</h2>
+            <form class="form-inline" action="/account/createtable" method="POST">
+                <input type="text" name="tablenumber" placeholder="Table number or name" class="form-control" />
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<!-- end main content -->
