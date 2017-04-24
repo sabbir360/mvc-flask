@@ -1,5 +1,5 @@
 from helpers.mockdbhelper import MockDBHelper
-from flask import Flask, redirect, request, url_for
+from flask import Flask, redirect, request, url_for, render_template
 from htmlmin.main import minify
 
 from application.mod_authentication.models import UserMix
@@ -51,6 +51,11 @@ def unauthorized_page(e):
     # return redirect(url_for("mod_authentication.login"), 401)
     return redirect(url_for('mod_authentication.login', next=request.url))
     # return render_template('404.html'), 404
+
+
+@application.errorhandler(403)
+def unauthorized_page(e):
+    return render_template('403.html')
 
 
 @application.context_processor

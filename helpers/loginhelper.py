@@ -58,6 +58,22 @@ class LoginHelper:
             session['logged_in'] = None
         return True
 
+    @staticmethod
+    def is_super_admin():
+        if session.get("logged_in")["user_role"] == application.mod_authentication.models.User.user_role_choices()['superadmin']:
+            return True
+
+    @staticmethod
+    def is_admin():
+        if session.get("logged_in")["user_role"] == application.mod_authentication.models.User.user_role_choices()['admin']:
+            return True
+
+    @staticmethod
+    def is_user():
+        # print(session.get("logged_in")["user_role"])
+        if session.get("logged_in")["user_role"] == application.mod_authentication.models.User.user_role_choices()['user']:
+            return True
+
 
 def login_check(func):
     @wraps(func)

@@ -7,12 +7,17 @@ from helpers.dbhelper import BaseModel
 
 
 class User(BaseModel):
+
+    @staticmethod
+    def user_role_choices():
+        return dict(user="User", admin="Admin", superadmin="Super Admin")
+
     email = CharField(unique=True)
     password = CharField()
     created = DateTimeField(default=datetime.now)
     updated = DateTimeField(null=True, constraints=[SQL('ON UPDATE CURRENT_TIMESTAMP')])
     full_name = CharField(null=True)
-    role = CharField(default="user", choices=[("user", "User"), ("admin", "Admin")])
+    role = CharField(default="user")
 
 
 class UserMix:
@@ -42,5 +47,4 @@ class UserMix:
             return True
 
     def is_authenticated(self):
-
         return self.is_active()
