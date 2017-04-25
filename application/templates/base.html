@@ -21,34 +21,60 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js "></script>
+    <!--<script>
+        window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js "><\/script>')
+    </script>-->
+    <script src="{{ url_for( 'static', filename='js/bootstrap.min.js' ) }}"></script>
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <!--<script src="../../assets/js/ie10-viewport-bug-workaround.js "></script>-->
+
+
+
+    {% block datagrid %}
+        {#        Datagrid content goes here#}
+        {#        http://js-grid.com#}
+    {% endblock %}
+
 </head>
 
 <body>
 
 {% block navbar %}
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="/dashboard">Dashboard</a>
-                <a class="navbar-brand" href="/dashboard/account">Account</a>
-                {% if is_authenticated %}<a class="navbar-brand" href="/logout">Logout</a>{% else %}
-                    <a class="navbar-brand" href="/login">Login</a>{% endif %}
 
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">YourAppNameWillGoesHere</a>
             </div>
-            {#
-            <div id="navbar" class="navbar-collapse collapse">
-                <form class="navbar-form navbar-right" action="/login" method="POST">
-                    <div class="form-group">
-                        <input type="email" name="email" placeholder="Email" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <input type="password" name="password" placeholder="Password" class="form-control">
-                    </div>
-                    <button type="submit" class="btn btn-success">Sign in</button>
-                </form>
-            </div>
-            <!--/.navbar-collapse -->
-            #}
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/dashboard">Dashboard</a></li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Settings
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a class="glyphicon glyphicon-user" href="/dashboard/account"> MyAccount</a></li>
+                        <li><a class="glyphicon glyphicon-hand-up" href="/dashboard/manage-user"> Manage Users</a></li>
+                    </ul>
+                </li>
+
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {#                <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>#}
+                {#                <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>#}
+                <li>
+                    {% if is_authenticated %}
+                        <a class="glyphicon glyphicon-log-out" href="/logout"> Logout</a>
+                    {% else %}
+                        <a class="glyphicon glyphicon-log-in" href="/login"> Login</a>
+                    {% endif %}
+                </li>
+            </ul>
         </div>
     </nav>
 
@@ -75,16 +101,7 @@
     </footer>
 </div>
 
-<!-- Bootstrap core JavaScript
-================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js "></script>
-<!--<script>
-    window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js "><\/script>')
-</script>-->
-<script src="{{ url_for( 'static', filename='js/bootstrap.min.js' ) }} "></script>
-<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-<!--<script src="../../assets/js/ie10-viewport-bug-workaround.js "></script>-->
+
 </body>
 
 </html>

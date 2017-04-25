@@ -17,7 +17,7 @@ class User(BaseModel):
     created = DateTimeField(default=datetime.now)
     updated = DateTimeField(null=True, constraints=[SQL('ON UPDATE CURRENT_TIMESTAMP')])
     full_name = CharField(null=True)
-    role = CharField(default="user")
+    role = CharField(default="User")
 
 
 class UserMix:

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block datagrid %}
+<script type="text/javascript" src="{{ url_for("static", filename="js/sgrid.js") }}" ></script>
+<script type="text/javascript">
+    {% autoescape false %}
+
+    $(document).ready(function () {
+        the_sgrid.table_id = "#jsGrid";
+        the_sgrid.initialize();
+        {#the_sgrid.table_header = [
+                        {"title": "Name", "sortable": true, "name": "full_name",
+                         "asc": "asc"},
+                        {"title": "Email", "name": "full_name", "sortable": false},
+                        {"title": "User Role", "sortable": true, "name": "role",
+                         "asc": "asc"},
+                        {"title": "Action", "name": "full_name", "sortable": false},
+                    ];#}
+        the_sgrid.loadData("/dashboard/manage-user", {startIndex:1});
+        //end table
+    });
+    {% endautoescape %}
+</script>
+{% endblock %}
+
+<!-- main content -->
+{% block content %}
+
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Manage User</h1>
+        </div>
+    </div>
+    <div id="user_roles" style="display: none">{{ role_data|safe }}</div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+
+                <div id="jsGrid">
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}
+<!-- end main content -->
+
+
+{#https://editor.datatables.net/examples/styling/bootstrap#}
