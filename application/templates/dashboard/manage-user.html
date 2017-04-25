@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block datagrid %}
-<script type="text/javascript" src="{{ url_for("static", filename="js/sgrid.js") }}" ></script>
+<script type="text/javascript" src="{{ url_for("static", filename="js/sgrid.js") }}"></script>
 <script type="text/javascript">
     {% autoescape false %}
 
@@ -16,7 +16,7 @@
                          "asc": "asc"},
                         {"title": "Action", "name": "full_name", "sortable": false},
                     ];#}
-        the_sgrid.loadData("/dashboard/manage-user", {startIndex:1});
+        the_sgrid.loadData("/dashboard/manage-user", {startIndex: 1});
         //end table
     });
     {% endautoescape %}

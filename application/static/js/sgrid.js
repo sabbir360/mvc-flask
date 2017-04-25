@@ -2,15 +2,17 @@
  * Created by Sabbir on 04/25/2017.
  */
 
-var the_grid_sort_back_color = "";
+var _sort_back_color_grid = "";
 
 the_sgrid = {
     table_id: "#sGrid",
     table_header: {},
     initialize: function () {
+
         // var table = "< class='table'><thead></thead><tbody><tr><td>Loading......</td></tbody></table>";
         // $(the_sgrid.table_id).html(table);
         // the_sgrid.loadTable({td: "Loading data for you!"});
+        // $(the_sgrid).html().append("<div style='background-color: blue;' class='.sgrid-loader .loader-box'>Loading....</div>")
         $(the_sgrid.table_id + " .asc-sortable").click(function () {
             var meta = JSON.parse($(the_sgrid.table_id + " .sgrid-meta").val());
             var sortable_field = $(this).attr("data-name");
@@ -18,7 +20,7 @@ the_sgrid = {
             params.sort_field = sortable_field;
             params.sort_type = "desc";
             the_sgrid.loadData(meta.url, params);
-            the_grid_sort_back_color = sortable_field;
+            _sort_back_color_grid = sortable_field;
             $(this).attr("style", "background-color:yellow;");
         });
         $(the_sgrid.table_id + " .dsc-sortable").click(function () {
@@ -29,10 +31,11 @@ the_sgrid = {
             params.sort_type = "asc";
             the_sgrid.loadData(meta.url, params);
             $(this).attr("style", "background-color:yellow;");
-            the_grid_sort_back_color = sortable_field;
+            _sort_back_color_grid = sortable_field;
         });
     },
     loadData: function (url, params) {
+        $(the_sgrid.table_id + " .sgrid-loader").show();
         // the_sgrid.initialize();
         the_sgrid.url = url;
 
@@ -49,11 +52,13 @@ the_sgrid = {
                 data: params,
                 success: function (response) {
                     the_sgrid.loadTable(response);
+                    // $(the_sgrid.table_id+" .sgrid-loader").hide();
                 },
                 error: function (error) {
                     console.log(error);
                     console.log("That odd! But above error occurred for SGRID...!");
-                    the_sgrid.loadTable({})
+                    the_sgrid.loadTable({});
+
                 }
             });
         }
@@ -74,17 +79,17 @@ the_sgrid = {
 
                     if (data.table_header[a].asc == "asc") {
 
-                        if (the_grid_sort_back_color == data.table_header[a].name) {
+                        if (_sort_back_color_grid == data.table_header[a].name) {
                             sortable_background = "style='background-color:yellow'";
                             // alert("ok...")
                         }
                         sortable = data.table_header[a].title + " <a href='javascript:void(0)' data-name='" + data.table_header[a].name + "' class='asc-sortable'><span class='glyphicon glyphicon-sort-by-alphabet'></span></a>";
                     } else {
-                        if (the_grid_sort_back_color == data.table_header[a].name) {
+                        if (_sort_back_color_grid == data.table_header[a].name) {
                             sortable_background = "style='background-color:yellow'";
                             // alert("ok...")
                         }
-                        sortable = data.table_header[a].title + " <a href='javascript:void(0)' " +sortable_background+ " data-name='" + data.table_header[a].name + "' class='dsc-sortable'><span class='glyphicon glyphicon-sort-by-alphabet-alt'></span></a>";
+                        sortable = data.table_header[a].title + " <a href='javascript:void(0)' " + sortable_background + " data-name='" + data.table_header[a].name + "' class='dsc-sortable'><span class='glyphicon glyphicon-sort-by-alphabet-alt'></span></a>";
                     }
 
                 } else {
@@ -112,8 +117,11 @@ the_sgrid = {
         }
 
         var final_table = "<table class=\"table\"><thead><tr>" + header + "</tr></thead><tbody>" + tr + "</tbody></table>";
-        $(the_sgrid.table_id).html(final_table);
+        $(the_sgrid.table_id).html('<div class="sgrid-loader">Loading....</div>' + final_table);
         the_sgrid.initialize();
+
+
+        $(the_sgrid.table_id + " .sgrid-loader").hide();
 
     }
 

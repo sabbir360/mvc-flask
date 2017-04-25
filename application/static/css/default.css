@@ -22,3 +22,13 @@ ul.errors {
 .flash-message-error {
     border-color: red;
 }
+
+.sgrid-loader {
+    background-color: blue;
+    font-weight: bolder;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    position: fixed;
+    margin-left: 40%;
+}
