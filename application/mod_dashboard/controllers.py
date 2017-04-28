@@ -51,13 +51,13 @@ def manage_user():
         #                  "asc": User.sortable_check(request, "role", "asc")},
         #                 {"title": "Action", "name": "full_name", "sortable": False},
         #             ], "value": []}
-        jax_data = grid_helper.response_format_generator_for_grid([
-            grid_helper.head_generator_for_grid("full_name"),
-            grid_helper.head_generator_for_grid("email"),
-            grid_helper.head_generator_for_grid("role", title="User Role"),
+        jax_data = grid_helper.response_format_generator([
+            grid_helper.head_generator("full_name"),
+            grid_helper.head_generator("email"),
+            grid_helper.head_generator("role", title="User Role"),
         ])
         row_list = []
-        query_obj = grid_helper.paginated_query_for_grid()
+        query_obj = grid_helper.paginated_query()
         page_size = 0
         if query_obj[1]:
             for user in query_obj[1]:

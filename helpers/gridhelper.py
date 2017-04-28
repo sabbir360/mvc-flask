@@ -22,7 +22,7 @@ class SGridHelper:
             return request.args.get("sort_type", self.sort_type)
         return "asc"
 
-    def head_generator_for_grid(self, field_name, sortable=True, title=None):
+    def head_generator(self, field_name, sortable=True, title=None):
         """
 
         :param field_name: 
@@ -38,11 +38,11 @@ class SGridHelper:
                 "asc": self.sortable_check(field_name)}
 
     # @staticmethod
-    def response_format_generator_for_grid(self, field_list):
+    def response_format_generator(self, field_list):
         table_header = []
         for field in field_list:
             table_header.append(field)
-        table_header.append(self.head_generator_for_grid("Action", sortable=False))
+        table_header.append(self.head_generator("Action", sortable=False))
         resp = {"page_size": "0", "page_index": "1", "item_per_page": self.item_per_page,
                 "table_header": table_header, "value": []}
 
@@ -54,7 +54,7 @@ class SGridHelper:
                             "sort_field": self.default_sort_field}
         return resp
 
-    def query_builder_for_grid(self, filters=None, return_count=False):
+    def query_builder(self, filters=None, return_count=False):
         # import pdb; pdb.set_trace()
         if return_count:
             # import pdb; pdb.set_trace()
@@ -71,7 +71,7 @@ class SGridHelper:
             return self.model.select()
         return None
 
-    def paginated_query_for_grid(self, filters=None, page_no=1, item_per_page=10):
+    def paginated_query(self, filters=None, page_no=1, item_per_page=10):
         """
 
         :param cls: Model
@@ -82,10 +82,10 @@ class SGridHelper:
         :return: list[total_count, query_object]
         """
         if page_no == 1:
-            total_count = self.query_builder_for_grid(filters=filters, return_count=True)
+            total_count = self.query_builder(filters=filters, return_count=True)
         else:
             total_count = 0
-        query = self.query_builder_for_grid(filters=filters).paginate(page_no, item_per_page)
+        query = self.query_builder(filters=filters).paginate(page_no, item_per_page)
         return [total_count, query]
 
     def grid_initializer(self):
