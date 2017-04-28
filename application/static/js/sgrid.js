@@ -71,6 +71,7 @@ the_sgrid = {
             var sortable = "";
             var sortable_background = "";
             var sort_class = "";
+            var glyph_icon_sort =""
             for (var a = 0; a < header_len; a++) {
 
                 //check for sorting
@@ -78,18 +79,23 @@ the_sgrid = {
 
                     if (data.table_header[a].asc == "asc") {
                         sort_class = "asc-sortable";
+                        glyph_icon_sort = "";
                     } else {
                         sort_class = "dsc-sortable";
+                        glyph_icon_sort = "-alt";
                     }
 
-                    if (_sort_back_color_grid == data.table_header[a].name) {
+                    /*if (_sort_back_color_grid == data.table_header[a].name) {
+                        sortable_background = "style='background-color:yellow'";
+                    }else*/
+                    if(data.meta.hasOwnProperty("sort_field") && data.meta.sort_field == data.table_header[a].name){
                         sortable_background = "style='background-color:yellow'";
                     }
 
                     sortable = data.table_header[a].title +
                         "<a href='javascript:void(0)' " + sortable_background +
                         "data-name='" + data.table_header[a].name + "' class='" +
-                        sort_class + "'><span class='glyphicon glyphicon-sort-by-alphabet-alt'></span></a>";
+                        sort_class + "'><span class='glyphicon glyphicon-sort-by-alphabet"+glyph_icon_sort+"'></span></a>";
 
                     sortable_background = "";
 
@@ -120,10 +126,19 @@ the_sgrid = {
         var final_table = "<table class=\"table\"><thead><tr>" + header + "</tr></thead><tbody>" + tr + "</tbody></table>";
         $(the_sgrid.table_id).html('<div class="sgrid-loader">Loading....</div>' + final_table);
         the_sgrid.initialize();
-
-
         $(the_sgrid.table_id + " .sgrid-loader").hide();
+        /*if (data.hasOwnProperty("meta")) {
+            var str = Object.keys(data.meta.params).map(function (key) {
+                if(key=="json"){
+                    return ""
+                }else{
+                    return encodeURIComponent(key) + '=' + encodeURIComponent(data.meta.params[key]);
+                }
 
+
+            }).join('&');
+            history.pushState({}, document.title, data.meta.url+"?"+str)
+        }*/
     }
 
 }

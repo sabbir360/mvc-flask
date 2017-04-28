@@ -2,6 +2,7 @@ from json import dumps
 from flask import Blueprint, render_template, abort, jsonify, request
 from helpers.generic import set_template
 from helpers.loginhelper import login_check, LoginHelper
+from helpers.gridhelper import SGridHelper
 
 from application.mod_authentication.models import User
 
@@ -31,35 +32,47 @@ def manage_user():
     if LoginHelper.is_user():
         return abort(403)
     role_data = []
+    User.item_per_page = 15
     user_roles = User.user_role_choices()
     for role in user_roles:
         role_data.append({"Key": user_roles[role], "Value": user_roles[role]})
     # return render_template("authentication/account.html", tables=tables)
 
     if request.args.get("json"):
-        print(User.sortable_check(request, "full_name", "asc"))
-        jax_data = {"pageSize": "25", "pageIndex": "0",
-                    "meta": {"url": request.path, "params": request.args},
-                    "table_header": [
-                        {"title": "Name", "sortable": True, "name": "full_name",
-                         "asc": User.sortable_check(request, "full_name", "asc")},
-                        {"title": "Email", "name": "full_name", "sortable": False},
-                        {"title": "User Role", "sortable": True, "name": "role",
-                         "asc": User.sortable_check(request, "role", "asc")},
-                        {"title": "Action", "name": "full_name", "sortable": False},
-                    ], "value": []}
-
+        grid_helper = SGridHelper(User, "role")
+        # print(User.sortable_check("full_name", "asc"))
+        # jax_data = {"page_size": "0", "page_index": "1",
+        #             "meta": {"url": request.path, "params": request.args},
+        #             "table_header": [
+        #                 {"title": "Name", "sortable": True, "name": "full_name",
+        #                  "asc": User.sortable_check(request, "full_name", "asc")},
+        #                 {"title": "Email", "name": "full_name", "sortable": False},
+        #                 {"title": "User Role", "sortable": True, "name": "role",
+        #                  "asc": User.sortable_check(request, "role", "asc")},
+        #                 {"title": "Action", "name": "full_name", "sortable": False},
+        #             ], "value": []}
+        jax_data = grid_helper.response_format_generator_for_grid([
+            grid_helper.head_generator_for_grid("full_name"),
+            grid_helper.head_generator_for_grid("email"),
+            grid_helper.head_generator_for_grid("role", title="User Role"),
+        ])
         row_list = []
-        for user in User.query_builder_for_grid(User, None, request.args.get("sort_field", "full_name"),
-                                                  request.args.get("sort_type", "asc")).limit(10):
-            row_list.append([
-                {"name": "full_name", "value": user.full_name, "type": "text"},
-                {"name": "email", "value": user.email, "type": "text"},
-                {"name": "role", "value": user.role, "type": "select", "item":
-                    role_data
-                 }
-            ])
-        jax_data['value'] = row_list;
+        query_obj = grid_helper.paginated_query_for_grid()
+        page_size = 0
+        if query_obj[1]:
+            for user in query_obj[1]:
+                row_list.append([
+                    {"name": "full_name", "value": user.full_name, "type": "text"},
+                    {"name": "email", "value": user.email, "type": "text"},
+                    {"name": "role", "value": user.role, "type": "select", "item":
+                        role_data
+                     }
+                ])
+            page_size = query_obj[0]
+        if page_size != 0:
+            page_size = query_obj[0]
+        jax_data['page_size'] = page_size
+        jax_data['value'] = row_list
 
         return jsonify(jax_data)
     return render_template(set_template(template_prefix, "manage-user"), role_data=dumps(role_data, ensure_ascii=False))
