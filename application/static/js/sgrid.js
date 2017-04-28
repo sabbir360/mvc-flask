@@ -9,10 +9,6 @@ the_sgrid = {
     table_header: {},
     initialize: function () {
 
-        // var table = "< class='table'><thead></thead><tbody><tr><td>Loading......</td></tbody></table>";
-        // $(the_sgrid.table_id).html(table);
-        // the_sgrid.loadTable({td: "Loading data for you!"});
-        // $(the_sgrid).html().append("<div style='background-color: blue;' class='.sgrid-loader .loader-box'>Loading....</div>")
         $(the_sgrid.table_id + " .asc-sortable").click(function () {
             var meta = JSON.parse($(the_sgrid.table_id + " .sgrid-meta").val());
             var sortable_field = $(this).attr("data-name");
@@ -73,24 +69,26 @@ the_sgrid = {
             var row_len = data.value.length;
             var sortable = "";
             var sortable_background = "";
+            var sort_class = "";
             for (var a = 0; a < header_len; a++) {
-                // console.log(data.table_header[a])
+
+                //check for sorting
                 if (data.table_header[a].sortable) {
 
                     if (data.table_header[a].asc == "asc") {
-
-                        if (_sort_back_color_grid == data.table_header[a].name) {
-                            sortable_background = "style='background-color:yellow'";
-                            // alert("ok...")
-                        }
-                        sortable = data.table_header[a].title + " <a href='javascript:void(0)' data-name='" + data.table_header[a].name + "' class='asc-sortable'><span class='glyphicon glyphicon-sort-by-alphabet'></span></a>";
+                        sort_class = "asc-sortable";
                     } else {
-                        if (_sort_back_color_grid == data.table_header[a].name) {
-                            sortable_background = "style='background-color:yellow'";
-                            // alert("ok...")
-                        }
-                        sortable = data.table_header[a].title + " <a href='javascript:void(0)' " + sortable_background + " data-name='" + data.table_header[a].name + "' class='dsc-sortable'><span class='glyphicon glyphicon-sort-by-alphabet-alt'></span></a>";
+                        sort_class = "dsc-sortable";
                     }
+
+                    if (_sort_back_color_grid == data.table_header[a].name) {
+                        sortable_background = "style='background-color:yellow'";
+                    }
+
+                    sortable = data.table_header[a].title +
+                        " <a href='javascript:void(0)' " + sortable_background +
+                        " data-name='" + data.table_header[a].name + "' class='" +
+                        sort_class + "'><span class='glyphicon glyphicon-sort-by-alphabet-alt'></span></a>";
 
                 } else {
                     sortable = data.table_header[a].title;
@@ -126,33 +124,3 @@ the_sgrid = {
     }
 
 }
-
-
-/*
- $.ajax({
- url: "/dashboard/manage-user?json=true",
- dataType: "json",
- success: function (response) {
- console.log(response);
- var header = "";
- var tr = "";
- for (var i = 0; i < response.table_header.length; i++) {
- //set table header title
- header += "<th>" + response.table_header[i] + "</th>";
- tr += "<tr>";
-
- //set table row
- for (var j = 0; j < response.value.length; j++) {
- //if()
- var row = response.value[j];
- tr += "<td>" + row.value + "</td>";
- }
-
- tr += "</tr>";
- }
-
- var final_table = "<table class=\"table\"><thead><tr>" + header + "</tr></thead><tbody>" + tr  +"</tbody></table>";
- $("#jsGrid").html(final_table);
- }
-
- });*/
