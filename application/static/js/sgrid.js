@@ -27,9 +27,9 @@ the_sgrid = {
                 trigger_ajax_call();
             });
 
-            $(the_sgrid.table_id + " .page-number a").click(function () {
+            $(the_sgrid.table_id + " .pagination li a").click(function () {
                 params.page_index = $(this).attr("data-page");
-                sortable_field = params.sort_field
+                sortable_field = params.sort_field;
                 trigger_ajax_call();
             });
 
@@ -162,21 +162,21 @@ the_sgrid = {
 
                     var page_activate = ""
                     if (p == current_page) {
-                        page_activate = "activate"
+                        page_activate = "active"
                     }
                     if(total_pages!=current_page){
-                        end_page_html = "<div class='page-number'><a data-page='"+ total_pages +"' href='javascript:void(0);'><span>&gt;&gt;</span></a></div>";
+                        end_page_html = "<li><a class='glyphicon glyphicon-fast-forward' data-page='"+ total_pages +"' href='javascript:void(0);'> </a></li>";
                     }
                     if(1!=current_page){
-                        start_page_html = "<div class='page-number'><a data-page='1' href='javascript:void(0);'><span >&lt;&lt;</span></a></div>";
+                        start_page_html = "<li><a class='glyphicon glyphicon-fast-backward' data-page='1' href='javascript:void(0);'> </a></li>";
                     }
-                    pages_html += "<div class='page-number " + page_activate + "'><a data-page='"+ p +"' href='javascript:void(0);'><span >" + p.toString() + "</span></a></div>";
+                    pages_html += "<li class='page-number " + page_activate + "'><a data-page='"+ p +"' href='javascript:void(0);'>" + p.toString() + "</a></li>";
                      if(page_count==10){
                         break;
                     }
                 }
 
-                final_table = final_table + '<div class="sgrid-page">' + start_page_html + pages_html + end_page_html + '</div>';
+                final_table = final_table + '<ul class="pagination">' + start_page_html + pages_html + end_page_html + '</ul>';
 
             }
 
