@@ -46,12 +46,12 @@ def manage_user():
             grid_helper.head_generator("email"),
             grid_helper.head_generator("role", title="User Role"),
         ]
-        query_obj = grid_helper.paginated_query()
+        # query_obj = grid_helper.paginated_query()
+        #
+        # jax_data = grid_helper.response_format
+        # jax_data['value'] = query_obj
 
-        jax_data = grid_helper.response_format
-        jax_data['value'] = query_obj
-
-        return jsonify(jax_data)
+        return jsonify(grid_helper.paginated_query())
     return render_template(set_template(template_prefix, "manage-user"), role_data=dumps(role_data, ensure_ascii=False))
 
 

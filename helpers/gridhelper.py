@@ -2,7 +2,6 @@ from flask import request
 
 
 class SGridHelper:
-
     item_per_page = 0
     model = None
     sort_type = ""
@@ -49,15 +48,15 @@ class SGridHelper:
         for field in field_list:
             table_header.append(field)
         table_header.append(self.head_generator("Action", sortable=False))
-        resp = {"page_size": "0", "page_index": "1", "item_per_page": self.item_per_page,
-                "table_header": table_header, "value": []}
+        resp = {"paginate": {
+            "page_size": "0", "page_index": "1", "item_per_page": self.item_per_page
+        }, "table_header": table_header, "value": []}
+        params = {}
+        for param in request.args:
+            params[param] = request.args.get(param)
 
-        if request.args.get("sort_field"):
-            resp["meta"] = {"url": request.path, "params": request.args,
-             "sort_field": request.args.get("sort_field")}
-        else:
-            resp["meta"] = {"url": request.path, "params": request.args,
-                            "sort_field": self.default_sort_field}
+        resp["meta"] = {"url": request.path, "params": params,
+                        "sort_field": request.args.get("sort_field", self.default_sort_field)}
 
         self.response_format = resp
         # return resp
@@ -88,33 +87,45 @@ class SGridHelper:
         """
 
         self.response_format_generator(self.row_skeleton)
+        self.page_no = request.args.get("page_index", 1)
 
-        self.page_no = request.args.get("page_no", 1)
         if self.page_no == 1:
             total_count = self.query_builder(filters=filters, return_count=True)
+            self.total_rows = total_count
+            self.response_format["meta"]["params"]["page_size"] = self.total_rows
+            self.response_format["meta"]["params"]["page_index"] = self.page_no
+            self.response_format["meta"]["params"]["item_per_page"] = self.item_per_page
+
         else:
-            total_count = 0
-        query = self.query_builder(filters=filters).paginate(self.page_no, self.item_per_page)
-        self.total_rows = total_count
+            self.total_rows = self.response_format["meta"]["params"]["page_size"]
+            self.response_format["meta"]["params"]["page_index"] = self.page_no
+            self.item_per_page = self.response_format["meta"]["params"]["item_per_page"]
+
+        self.response_format["meta"]["params"]["sort_field"] = request.args.get("sort_field",
+                                                                                self.default_sort_field)
+        self.response_format["meta"]["params"]["sort_type"] = request.args.get("sort_type", self.sort_type)
+
+        query = self.query_builder(filters=filters).paginate(int(self.page_no), int(self.item_per_page))
+
+        self.response_format["paginate"]["page_size"] = self.total_rows
+        self.response_format["paginate"]["page_index"] = self.page_no
+
         row_list = []
 
         for item in query:
             row_keys = []
             for key in self.row_skeleton:
-
                 row_keys.append(
                     {
                         "name": key["name"],
                         "type": key["field_type"],
-                        "value": eval("item."+key["name"])
+                        "value": eval("item." + key["name"])
                     }
                 )
-
             row_list.append(row_keys)
+        self.response_format["value"] = row_list
 
-        # import pdb; pdb.set_trace()
-        return row_list
-        return [total_count, query]
+        return self.response_format
 
     def grid_initializer(self):
         pass

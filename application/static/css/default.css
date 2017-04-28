@@ -32,3 +32,20 @@ ul.errors {
     position: fixed;
     margin-left: 40%;
 }
+
+.sgrid-page {
+    display: block;
+}
+
+.sgrid-page .page-number {
+    display: inline-block;
+    padding: 0 5px;
+    border: 1px solid skyblue;
+}
+.page-number.activate{
+    background: green;
+}
+.page-number.activate a{
+    color: white;
+    font-weight: bolder;
+}
