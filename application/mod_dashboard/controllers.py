@@ -39,40 +39,17 @@ def manage_user():
     # return render_template("authentication/account.html", tables=tables)
 
     if request.args.get("json"):
-        grid_helper = SGridHelper(User, "role")
-        # print(User.sortable_check("full_name", "asc"))
-        # jax_data = {"page_size": "0", "page_index": "1",
-        #             "meta": {"url": request.path, "params": request.args},
-        #             "table_header": [
-        #                 {"title": "Name", "sortable": True, "name": "full_name",
-        #                  "asc": User.sortable_check(request, "full_name", "asc")},
-        #                 {"title": "Email", "name": "full_name", "sortable": False},
-        #                 {"title": "User Role", "sortable": True, "name": "role",
-        #                  "asc": User.sortable_check(request, "role", "asc")},
-        #                 {"title": "Action", "name": "full_name", "sortable": False},
-        #             ], "value": []}
-        jax_data = grid_helper.response_format_generator([
+        grid_helper = SGridHelper(User, "id")
+        grid_helper.row_skeleton = [
+            grid_helper.head_generator("id"),
             grid_helper.head_generator("full_name"),
             grid_helper.head_generator("email"),
             grid_helper.head_generator("role", title="User Role"),
-        ])
-        row_list = []
+        ]
         query_obj = grid_helper.paginated_query()
-        page_size = 0
-        if query_obj[1]:
-            for user in query_obj[1]:
-                row_list.append([
-                    {"name": "full_name", "value": user.full_name, "type": "text"},
-                    {"name": "email", "value": user.email, "type": "text"},
-                    {"name": "role", "value": user.role, "type": "select", "item":
-                        role_data
-                     }
-                ])
-            page_size = query_obj[0]
-        if page_size != 0:
-            page_size = query_obj[0]
-        jax_data['page_size'] = page_size
-        jax_data['value'] = row_list
+
+        jax_data = grid_helper.response_format
+        jax_data['value'] = query_obj
 
         return jsonify(jax_data)
     return render_template(set_template(template_prefix, "manage-user"), role_data=dumps(role_data, ensure_ascii=False))

@@ -7,6 +7,12 @@ class SGridHelper:
     model = None
     sort_type = ""
     default_sort_field = ""
+    response_format = {}
+
+    row_skeleton = []
+
+    total_rows = 0
+    page_no = 1
 
     def __init__(self, model, default_sort_field, item_per_page=10, sort_type="desc"):
 
@@ -14,27 +20,27 @@ class SGridHelper:
         self.model = model
         self.default_sort_field = default_sort_field
         self.sort_type = sort_type
+        # self.row_skeleton = row_skeleton
 
     def sortable_check(self, field):
-
         if request.args.get("sort_field", self.default_sort_field) == field:
-            # import pdb; pdb.set_trace()
             return request.args.get("sort_type", self.sort_type)
-        return "asc"
+        return self.default_sort_field
 
-    def head_generator(self, field_name, sortable=True, title=None):
+    def head_generator(self, field_name, sortable=True, field_type="text", title=None):
         """
-
-        :param field_name: 
-        :param sortable: 
-        :param title: 
+        :param field_name: string
+        :param sortable: boolean
+        :param field_type: string
+        :param title: string
         :return: dict {"title": title, "sortable": sortable, "name": field_name,
-                "asc": BaseModel.sortable_check("full_name")}
+                "asc": self.sortable_check("full_name")}
         """
         if title is None:
             title = field_name.replace("_", " ").title()
 
         return {"title": title, "sortable": sortable, "name": field_name,
+                "field_type": field_type,
                 "asc": self.sortable_check(field_name)}
 
     # @staticmethod
@@ -52,16 +58,16 @@ class SGridHelper:
         else:
             resp["meta"] = {"url": request.path, "params": request.args,
                             "sort_field": self.default_sort_field}
-        return resp
+
+        self.response_format = resp
+        # return resp
 
     def query_builder(self, filters=None, return_count=False):
-        # import pdb; pdb.set_trace()
         if return_count:
-            # import pdb; pdb.set_trace()
             return self.model.select().count()
 
-        sort_field = request.args.get("sort_field", None)
-        sort_value = request.args.get("sort_type", None)
+        sort_field = request.args.get("sort_field", self.default_sort_field)
+        sort_value = request.args.get("sort_type", self.sort_type)
 
         if sort_field and sort_value and getattr(self.model, sort_field) \
                 and (sort_value == "asc" or sort_value == "desc"):
@@ -71,21 +77,43 @@ class SGridHelper:
             return self.model.select()
         return None
 
-    def paginated_query(self, filters=None, page_no=1, item_per_page=10):
+    def paginated_query(self, filters=None):
+        """
+        
+        :param row_skeleton: list[]
+        :param filters: orm object
+        :param page_no: 
+        :param item_per_page: 
+        :return: 
         """
 
-        :param cls: Model
-        :param page_no: Which page data req. default is 1
-        :param filters: bunch of filters
-        :param req: request (flask)
-        :param item_per_page: default 10, total item per page.
-        :return: list[total_count, query_object]
-        """
-        if page_no == 1:
+        self.response_format_generator(self.row_skeleton)
+
+        self.page_no = request.args.get("page_no", 1)
+        if self.page_no == 1:
             total_count = self.query_builder(filters=filters, return_count=True)
         else:
             total_count = 0
-        query = self.query_builder(filters=filters).paginate(page_no, item_per_page)
+        query = self.query_builder(filters=filters).paginate(self.page_no, self.item_per_page)
+        self.total_rows = total_count
+        row_list = []
+
+        for item in query:
+            row_keys = []
+            for key in self.row_skeleton:
+
+                row_keys.append(
+                    {
+                        "name": key["name"],
+                        "type": key["field_type"],
+                        "value": eval("item."+key["name"])
+                    }
+                )
+
+            row_list.append(row_keys)
+
+        # import pdb; pdb.set_trace()
+        return row_list
         return [total_count, query]
 
     def grid_initializer(self):

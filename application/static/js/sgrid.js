@@ -106,7 +106,10 @@ the_sgrid = {
             }
 
             for (var b = 0; b < row_len; b++) {
+
                 var td = "";
+                // console.log(data.value[b].length)
+                // td += "<td>" + data.value[b][i].value + "</td>";
                 for (var i = 0; i < data.value[b].length; i++) {
                     td += "<td>" + data.value[b][i].value + "</td>";
                 }
