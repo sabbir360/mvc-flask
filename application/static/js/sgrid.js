@@ -10,6 +10,7 @@ the_sgrid = {
     initialize: function () {
 
         $(the_sgrid.table_id + " .asc-sortable").click(function () {
+
             var meta = JSON.parse($(the_sgrid.table_id + " .sgrid-meta").val());
             var sortable_field = $(this).attr("data-name");
             var params = meta.params;
@@ -17,7 +18,7 @@ the_sgrid = {
             params.sort_type = "desc";
             the_sgrid.loadData(meta.url, params);
             _sort_back_color_grid = sortable_field;
-            $(this).attr("style", "background-color:yellow;");
+            // $(this).attr("style", "background-color:yellow;");
         });
         $(the_sgrid.table_id + " .dsc-sortable").click(function () {
             var meta = JSON.parse($(the_sgrid.table_id + " .sgrid-meta").val());
@@ -26,7 +27,7 @@ the_sgrid = {
             params.sort_field = sortable_field;
             params.sort_type = "asc";
             the_sgrid.loadData(meta.url, params);
-            $(this).attr("style", "background-color:yellow;");
+            // $(this).attr("style", "background-color:yellow;");
             _sort_back_color_grid = sortable_field;
         });
     },
@@ -86,9 +87,11 @@ the_sgrid = {
                     }
 
                     sortable = data.table_header[a].title +
-                        " <a href='javascript:void(0)' " + sortable_background +
-                        " data-name='" + data.table_header[a].name + "' class='" +
+                        "<a href='javascript:void(0)' " + sortable_background +
+                        "data-name='" + data.table_header[a].name + "' class='" +
                         sort_class + "'><span class='glyphicon glyphicon-sort-by-alphabet-alt'></span></a>";
+
+                    sortable_background = "";
 
                 } else {
                     sortable = data.table_header[a].title;
