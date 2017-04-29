@@ -77,6 +77,7 @@ the_sgrid = {
     loadTable: function (data) {
         var header = "";
         var tr = "";
+        var filter_html = "";
 
         if (data.hasOwnProperty("value")) {
 
@@ -86,45 +87,99 @@ the_sgrid = {
             var sortable_background = "";
             var sort_class = "";
             var glyph_icon_sort = ""
+
+
             for (var a = 0; a < header_len; a++) {
+                var data_table_head = data.table_header[a];
+                if (data_table_head.visible == true) {
 
-                //check for sorting
-                if (data.table_header[a].sortable) {
+                    //check for sorting
+                    if (data_table_head.sortable) {
 
-                    if (data.table_header[a].asc == "asc") {
-                        sort_class = "asc-sortable";
-                        glyph_icon_sort = "";
+                        if (data_table_head.asc == "asc") {
+                            sort_class = "asc-sortable";
+                            glyph_icon_sort = "";
+                        } else {
+                            sort_class = "dsc-sortable";
+                            glyph_icon_sort = "-alt";
+                        }
+
+                        if (data.meta.hasOwnProperty("sort_field") && data.meta.sort_field == data_table_head.name) {
+                            sortable_background = "style='background-color:yellow'";
+                        }
+
+                        sortable = data_table_head.title +
+                            "<a href='javascript:void(0)' " + sortable_background +
+                            "data-name='" + data_table_head.name + "' class='" +
+                            sort_class + "'><span class='glyphicon glyphicon-sort-by-alphabet" + glyph_icon_sort + "'></span></a>";
+
+                        sortable_background = "";
+
                     } else {
-                        sort_class = "dsc-sortable";
-                        glyph_icon_sort = "-alt";
+                        sortable = data_table_head.title;
                     }
 
-                    /*if (_sort_back_color_grid == data.table_header[a].name) {
-                     sortable_background = "style='background-color:yellow'";
-                     }else*/
-                    if (data.meta.hasOwnProperty("sort_field") && data.meta.sort_field == data.table_header[a].name) {
-                        sortable_background = "style='background-color:yellow'";
+                    //filter generator
+                    if (data_table_head.field_type == "number") {
+
+                        filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>"
+                        filter_html += "<select class='selectbox form-control operator'>" +
+                            "<option data-value='>'>&gt;</option>" +
+                            "<option data-value='<'>&lt;</option>" +
+                            "<option data-value='>='>&gt=;</option>" +
+                            "<option data-value='<='>&lt=;</option>" +
+                            "<option data-value='='>=</option>" +
+                            "<option data-value='!='>!=</option>" +
+                            "</select>";
+                        filter_html += "<input type='text' class='form-control value' name='" + data_table_head.name + "' />";
+                        filter_html += "</div>";
+                    } else if (data_table_head.field_type == "text") {
+                        filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>";
+                        filter_html += "<select class='selectbox form-control operator'>" +
+                            "<option data-value='='>=</option>" +
+                            "<option data-value='like'>Like</option>" +
+                            "<option data-value='not-like'>Not Like</option>" +
+                            "<option data-value='!='>!=</option>" +
+                            "</select>";
+                        filter_html += "<input type='text' class='form-control value' name='" + data_table_head.name + "' />";
+                        filter_html += "</div>";
+                    } else if (data_table_head.field_type == "bool") {
+                        filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>";
+                        filter_html += "<select class='selectbox form-control operator'>" +
+                            "<option data-value='='>=</option>" +
+                            "<option data-value='!='>!=</option>" +
+                            "</select>";
+                        filter_html += "<input type='text' readonly='true' value='True' class='form-control value' name='" + data_table_head.name + "' />";
+                        filter_html += "</div>";
+                    } else if (data_table_head.field_type == "option") {
+                        filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>";
+                        filter_html += "<select class='selectbox form-control operator'>" +
+                            "<option data-value='='>=</option>" +
+                            "<option data-value='!='>!=</option>" +
+                            "</select>";
+                        filter_html += "<select name='" + data_table_head.name + "' class='selectbox form-control value'>"
+                        for (var o = 0; o < data_table_head.option.length; o++) {
+                            filter_html += "<option data-value='" + data_table_head.option[o].Key + "'>" + data_table_head.option[o].Value + "</option>"
+                        }
+                        // filter_html += filter_html+="<input type='text' class='form-control' name='"+data_table_head.name+"' />";
+                        filter_html += "</select></div>";
                     }
 
-                    sortable = data.table_header[a].title +
-                        "<a href='javascript:void(0)' " + sortable_background +
-                        "data-name='" + data.table_header[a].name + "' class='" +
-                        sort_class + "'><span class='glyphicon glyphicon-sort-by-alphabet" + glyph_icon_sort + "'></span></a>";
 
-                    sortable_background = "";
-
-                } else {
-                    sortable = data.table_header[a].title;
+                    //table head
+                    header += "<th>" + sortable + "</th>";
                 }
-                header += "<th>" + sortable + "</th>";
             }
 
+            //table body
             for (var b = 0; b < row_len; b++) {
 
                 var td = "";
 
                 for (var i = 0; i < data.value[b].length; i++) {
-                    td += "<td>" + data.value[b][i].value + "</td>";
+                    if (data.value[b][i].visible == true) {
+                        td += "<td>" + data.value[b][i].value + "</td>";
+                    }
                 }
                 tr = tr + "<tr>" + td + "</tr>";
             }
@@ -149,11 +204,11 @@ the_sgrid = {
             if (total_rows > 0) {
                 var total_pages = Math.ceil(total_rows / item_per_page);
                 var pages_html = "";
-                var start_page_html = ""
-                var end_page_html = ""
+                var start_page_html = "";
+                var end_page_html = "";
                 var page_start = current_page
-                if(page_start>1){
-                    page_start = page_start-1;
+                if (page_start > 1) {
+                    page_start = page_start - 1;
                 }
                 var page_count = 0;
                 for (var p = page_start; p <= total_pages; p++) {
@@ -164,17 +219,19 @@ the_sgrid = {
                     if (p == current_page) {
                         page_activate = "active"
                     }
-                    if(total_pages!=current_page){
-                        end_page_html = "<li><a class='glyphicon glyphicon-fast-forward' data-page='"+ total_pages +"' href='javascript:void(0);'> </a></li>";
+                    if (total_pages != current_page) {
+                        end_page_html = "<li><a class='glyphicon glyphicon-fast-forward' data-page='" + total_pages + "' href='javascript:void(0);'> </a></li>";
                     }
-                    if(1!=current_page){
+                    if (1 != current_page) {
                         start_page_html = "<li><a class='glyphicon glyphicon-fast-backward' data-page='1' href='javascript:void(0);'> </a></li>";
                     }
-                    pages_html += "<li class='page-number " + page_activate + "'><a data-page='"+ p +"' href='javascript:void(0);'>" + p.toString() + "</a></li>";
-                     if(page_count==10){
+                    pages_html += "<li class='page-number " + page_activate + "'><a data-page='" + p + "' href='javascript:void(0);'>" + p.toString() + "</a></li>";
+                    if (page_count == 10) {
                         break;
                     }
                 }
+
+                //for filter
 
                 final_table = final_table + '<ul class="pagination">' + start_page_html + pages_html + end_page_html + '</ul>';
 
@@ -183,8 +240,11 @@ the_sgrid = {
 
         }
 
+        filter_html = "<div class='sgrid filters'><div><label>Filters:</label></div>" + filter_html;
+        filter_html += "<div class='filter-container'><button class='start-filter form-control btn btn-primary btn-md'>Filter</button>"
+        filter_html += "<button class='reset-filter form-control btn btn-primary btn-md'>Reset</button></div></div>";
 
-        $(the_sgrid.table_id).html('<div class="sgrid-loader">Loading....</div>' + final_table);
+        $(the_sgrid.table_id).html('<div class="sgrid-loader">Loading....</div>' + filter_html + final_table);
         the_sgrid.initialize();
         $(the_sgrid.table_id + " .sgrid-loader").hide();
 

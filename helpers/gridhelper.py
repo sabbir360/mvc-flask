@@ -26,12 +26,15 @@ class SGridHelper:
             return request.args.get("sort_type", self.sort_type)
         return self.default_sort_field
 
-    def head_generator(self, field_name, sortable=True, field_type="text", title=None):
+    def head_generator(self, field_name, sortable=True,
+                       field_type="text", title=None, visible=True, option=None):
         """
         :param field_name: string
         :param sortable: boolean
         :param field_type: string
         :param title: string
+        :param visible: boolean
+        :param option: {key, value}
         :return: dict {"title": title, "sortable": sortable, "name": field_name,
                 "asc": self.sortable_check("full_name")}
         """
@@ -39,7 +42,7 @@ class SGridHelper:
             title = field_name.replace("_", " ").title()
 
         return {"title": title, "sortable": sortable, "name": field_name,
-                "field_type": field_type,
+                "field_type": field_type, "option": option, "visible": visible,
                 "asc": self.sortable_check(field_name)}
 
     # @staticmethod
@@ -119,7 +122,8 @@ class SGridHelper:
                     {
                         "name": key["name"],
                         "type": key["field_type"],
-                        "value": eval("item." + key["name"])
+                        "value": eval("item." + key["name"]),
+                        "visible": key["visible"]
                     }
                 )
             row_list.append(row_keys)

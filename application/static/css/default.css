@@ -50,3 +50,18 @@ ul.errors {
     color: white;
     font-weight: bolder;
 }*/
+
+.sgrid.filters{
+    display: block;
+}
+.sgrid.filters .filter-container{
+    display: inline-block;
+    padding: 0 5px;
+}
+
+.sgrid.filters .filter-container{
+    display: inline-block;
+}
+.sgrid.filters .value{
+    margin-top: 3px;
+}
