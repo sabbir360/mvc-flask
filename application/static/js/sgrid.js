@@ -15,11 +15,15 @@ the_sgrid = {
         if (raw_meta != undefined) {
             var meta = JSON.parse(raw_meta);
             var params = meta.params;
+
+            //ascending sorting
             $(the_sgrid.table_id + " .asc-sortable").click(function () {
                 sortable_field = $(this).attr("data-name");
                 params.sort_type = "desc";
                 trigger_ajax_call();
             });
+
+            //descending sorting
             $(the_sgrid.table_id + " .dsc-sortable").click(function () {
                 sortable_field = $(this).attr("data-name");
                 params.sort_field = sortable_field;
@@ -27,10 +31,34 @@ the_sgrid = {
                 trigger_ajax_call();
             });
 
+            //pagination
             $(the_sgrid.table_id + " .pagination li a").click(function () {
                 params.page_index = $(this).attr("data-page");
                 sortable_field = params.sort_field;
                 trigger_ajax_call();
+            });
+
+            //filtering
+            $(the_sgrid.table_id + " .start-filter").click(function () {
+                var selector = $(the_sgrid.table_id + " .filter-container");
+
+                sortable_field = params.sort_field;
+                selector.each(function (index, item) {
+                    var name = $(item).find(".value").attr("name");
+                    if (name != undefined) {
+                        params[name] = {
+                            op: $(item).find(".operator option:selected").attr("data-value"),
+                            val: $(item).find(".value").val()
+                        }
+
+                    }
+                });
+
+                trigger_ajax_call();
+            });
+
+            $(the_sgrid.table_id + " .reset-filter").click(function () {
+               window.location.reload();
             });
 
             function trigger_ajax_call() {
@@ -41,6 +69,19 @@ the_sgrid = {
                 // _trigger_ajax_call_grid=false;
 
             }
+
+            // set operator and value, for each filter result.
+            var prev_select = "";
+
+            $(the_sgrid.table_id + " .operator").on('focus', function () {
+                prev_select = $(this).find("option:selected");
+            }).change(function () {
+                params[$(this).parent().find(".value").attr("name") + "[op]"] = $(this).find("option:selected").attr("data-value");
+            });
+
+            $(the_sgrid.table_id + " .value").on('change', function () {
+                params[$(this).attr("name") + "[val]"] = this.value;
+            });
 
         }
 
@@ -78,6 +119,27 @@ the_sgrid = {
         var header = "";
         var tr = "";
         var filter_html = "";
+
+        function selected_maker(operator, data, name) {
+            if (data.meta.params.hasOwnProperty(name + "[op]")) {
+                // op = data.params[name].op;
+                // console.log(data.meta.params[name]);
+                if (operator == data.meta.params[name + "[op]"]) {
+                    return "selected='true'";
+                }
+            }
+
+            return "";
+        }
+
+        function filter_input_value_set(data, name) {
+            
+            if (data.meta.params[name + "[val]"] != undefined) {
+                // val = data.meta.params[data_table_head.name + "[val]"];
+                return data.meta.params[name + "[val]"]
+            }
+            return "";
+        }
 
         if (data.hasOwnProperty("value")) {
 
@@ -119,56 +181,69 @@ the_sgrid = {
                         sortable = data_table_head.title;
                     }
 
-                    //filter generator
+
+                    //table head
+                    header += "<th>" + sortable + "</th>";
+                }
+
+                //filter generator
+                if (data_table_head.name != "Action") {
+
                     if (data_table_head.field_type == "number") {
+                       
+                        if (data.meta.params[data_table_head.name + "[val]"] != undefined) {
+                            val = data.meta.params[data_table_head.name + "[val]"];
+                        }
 
                         filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>"
-                        filter_html += "<select class='selectbox form-control operator'>" +
-                            "<option data-value='>'>&gt;</option>" +
-                            "<option data-value='<'>&lt;</option>" +
-                            "<option data-value='>='>&gt=;</option>" +
-                            "<option data-value='<='>&lt=;</option>" +
-                            "<option data-value='='>=</option>" +
-                            "<option data-value='!='>!=</option>" +
-                            "</select>";
-                        filter_html += "<input type='text' class='form-control value' name='" + data_table_head.name + "' />";
+                        filter_html += "<select class='selectbox form-control operator'>";
+                        filter_html += "<option " + selected_maker(">", data, data_table_head.name) + " data-value='>'>&gt;</option>" +
+                            "<option " + selected_maker("<", data, data_table_head.name) + " data-value='<'>&lt;</option>" +
+                            "<option " + selected_maker(">=", data, data_table_head.name) + " data-value='>='>&gt=</option>" +
+                            "<option " + selected_maker("<=", data, data_table_head.name) + " data-value='<='>&lt=</option>" +
+                            "<option " + selected_maker("=", data, data_table_head.name) + " data-value='='>=</option>" +
+                            "<option " + selected_maker("!=", data, data_table_head.name) + " data-value='!='>!=</option>";
+
+                        filter_html += "</select>";
+                        filter_html += "<input value='" + filter_input_value_set(data, data_table_head.name) + "' type='number' class='form-control value' name='" + data_table_head.name + "' />";
                         filter_html += "</div>";
                     } else if (data_table_head.field_type == "text") {
                         filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>";
                         filter_html += "<select class='selectbox form-control operator'>" +
-                            "<option data-value='='>=</option>" +
-                            "<option data-value='like'>Like</option>" +
-                            "<option data-value='not-like'>Not Like</option>" +
-                            "<option data-value='!='>!=</option>" +
+                            "<option " + selected_maker("=", data, data_table_head.name) + " data-value='='>=</option>" +
+                            "<option " + selected_maker("like", data, data_table_head.name) + " data-value='like'>Like</option>" +
+                            "<option " + selected_maker("not-like", data, data_table_head.name) + " data-value='not-like'>Not Like</option>" +
+                            "<option " + selected_maker("!=", data, data_table_head.name) + " data-value='!='>!=</option>" +
                             "</select>";
-                        filter_html += "<input type='text' class='form-control value' name='" + data_table_head.name + "' />";
+                        filter_html += "<input value='"+filter_input_value_set(data, data_table_head.name)+"' type='text' class='form-control value' name='" + data_table_head.name + "' />";
                         filter_html += "</div>";
                     } else if (data_table_head.field_type == "bool") {
                         filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>";
                         filter_html += "<select class='selectbox form-control operator'>" +
-                            "<option data-value='='>=</option>" +
-                            "<option data-value='!='>!=</option>" +
+                            "<option " + selected_maker("=", data, data_table_head.name) + " data-value='='>=</option>" +
+                            "<option " + selected_maker("!=", data, data_table_head.name) + " data-value='!='>!=</option>" +
                             "</select>";
                         filter_html += "<input type='text' readonly='true' value='True' class='form-control value' name='" + data_table_head.name + "' />";
                         filter_html += "</div>";
                     } else if (data_table_head.field_type == "option") {
                         filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>";
                         filter_html += "<select class='selectbox form-control operator'>" +
-                            "<option data-value='='>=</option>" +
-                            "<option data-value='!='>!=</option>" +
+                            "<option " + selected_maker("=", data, data_table_head.name) + " data-value='='>=</option>" +
+                            "<option " + selected_maker("!=", data, data_table_head.name) + " data-value='!='>!=</option>" +
                             "</select>";
                         filter_html += "<select name='" + data_table_head.name + "' class='selectbox form-control value'>"
                         for (var o = 0; o < data_table_head.option.length; o++) {
-                            filter_html += "<option data-value='" + data_table_head.option[o].Key + "'>" + data_table_head.option[o].Value + "</option>"
+                            var selected_dd = "";
+                            if(data_table_head.option[o].Key == data.meta.params[data_table_head.name+"[val]"]){
+                                selected_dd = "selected='true'";
+                            }
+                            filter_html += "<option "+selected_dd+" data-value='" + data_table_head.option[o].Key + "'>" + data_table_head.option[o].Value + "</option>"
                         }
                         // filter_html += filter_html+="<input type='text' class='form-control' name='"+data_table_head.name+"' />";
                         filter_html += "</select></div>";
                     }
-
-
-                    //table head
-                    header += "<th>" + sortable + "</th>";
                 }
+
             }
 
             //table body

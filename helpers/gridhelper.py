@@ -64,7 +64,10 @@ class SGridHelper:
         self.response_format = resp
         # return resp
 
-    def query_builder(self, filters=None, return_count=False):
+    def query_builder(self, return_count=False):
+
+
+
         if return_count:
             return self.model.select().count()
 
@@ -79,7 +82,7 @@ class SGridHelper:
             return self.model.select()
         return None
 
-    def paginated_query(self, filters=None):
+    def paginated_query(self):
         """
         
         :param row_skeleton: list[]
@@ -93,7 +96,7 @@ class SGridHelper:
         self.page_no = request.args.get("page_index", 1)
 
         if self.page_no == 1:
-            total_count = self.query_builder(filters=filters, return_count=True)
+            total_count = self.query_builder(return_count=True)
             self.total_rows = total_count
             self.response_format["meta"]["params"]["page_size"] = self.total_rows
             self.response_format["meta"]["params"]["page_index"] = self.page_no
@@ -108,7 +111,7 @@ class SGridHelper:
                                                                                 self.default_sort_field)
         self.response_format["meta"]["params"]["sort_type"] = request.args.get("sort_type", self.sort_type)
 
-        query = self.query_builder(filters=filters).paginate(int(self.page_no), int(self.item_per_page))
+        query = self.query_builder().paginate(int(self.page_no), int(self.item_per_page))
 
         self.response_format["paginate"]["page_size"] = self.total_rows
         self.response_format["paginate"]["page_index"] = self.page_no
