@@ -37,6 +37,9 @@ def manage_user():
         grid_helper.row_skeleton = [
             grid_helper.head_generator("id", visible=False, field_type="number"),
             grid_helper.head_generator("full_name"),
+            grid_helper.head_generator("created", field_type="date"),
+            grid_helper.head_generator("updated", field_type="date"),
+            # grid_helper.head_generator("password"),
             grid_helper.head_generator("email"),
             grid_helper.head_generator("role", title="User Role",
                                        field_type="option", option=User().user_role_combo()),

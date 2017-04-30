@@ -58,7 +58,7 @@ the_sgrid = {
             });
 
             $(the_sgrid.table_id + " .reset-filter").click(function () {
-               window.location.reload();
+                window.location.reload();
             });
 
             function trigger_ajax_call() {
@@ -133,7 +133,7 @@ the_sgrid = {
         }
 
         function filter_input_value_set(data, name) {
-            
+
             if (data.meta.params[name + "[val]"] != undefined) {
                 // val = data.meta.params[data_table_head.name + "[val]"];
                 return data.meta.params[name + "[val]"]
@@ -190,7 +190,7 @@ the_sgrid = {
                 if (data_table_head.name != "Action") {
 
                     if (data_table_head.field_type == "number") {
-                       
+
                         if (data.meta.params[data_table_head.name + "[val]"] != undefined) {
                             val = data.meta.params[data_table_head.name + "[val]"];
                         }
@@ -215,7 +215,21 @@ the_sgrid = {
                             "<option " + selected_maker("not-like", data, data_table_head.name) + " data-value='not-like'>Not Like</option>" +
                             "<option " + selected_maker("!=", data, data_table_head.name) + " data-value='!='>!=</option>" +
                             "</select>";
-                        filter_html += "<input value='"+filter_input_value_set(data, data_table_head.name)+"' type='text' class='form-control value' name='" + data_table_head.name + "' />";
+                        filter_html += "<input value='" + filter_input_value_set(data, data_table_head.name) + "' type='text' class='form-control value' name='" + data_table_head.name + "' />";
+                        filter_html += "</div>";
+                    } else if (data_table_head.field_type == "date") {
+                        filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>";
+                        filter_html += "<select class='selectbox form-control operator'>" +
+                            "<option " + selected_maker("=", data, data_table_head.name) + " data-value='='>=</option>" +
+                            "<option " + selected_maker(">", data, data_table_head.name) + " data-value='>'>&gt;</option>" +
+                            "<option " + selected_maker(">=", data, data_table_head.name) + " data-value='>='>&gt;=</option>" +
+                            "<option " + selected_maker("<", data, data_table_head.name) + " data-value='<'>&lt;</option>" +
+                            "<option " + selected_maker("<=", data, data_table_head.name) + " data-value='<='>&lt;=</option>" +
+                            "<option " + selected_maker("like", data, data_table_head.name) + " data-value='like'>Like</option>" +
+                            "<option " + selected_maker("not-like", data, data_table_head.name) + " data-value='not-like'>Not Like</option>" +
+                            "<option " + selected_maker("!=", data, data_table_head.name) + " data-value='!='>!=</option>" +
+                            "</select>";
+                        filter_html += "<input placeholder='YYYY-MM-DD' value='" + filter_input_value_set(data, data_table_head.name) + "' type='text' class='form-control value' name='" + data_table_head.name + "' />";
                         filter_html += "</div>";
                     } else if (data_table_head.field_type == "bool") {
                         filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>";
@@ -234,10 +248,10 @@ the_sgrid = {
                         filter_html += "<select name='" + data_table_head.name + "' class='selectbox form-control value'>"
                         for (var o = 0; o < data_table_head.option.length; o++) {
                             var selected_dd = "";
-                            if(data_table_head.option[o].Key == data.meta.params[data_table_head.name+"[val]"]){
+                            if (data_table_head.option[o].Key == data.meta.params[data_table_head.name + "[val]"]) {
                                 selected_dd = "selected='true'";
                             }
-                            filter_html += "<option "+selected_dd+" data-value='" + data_table_head.option[o].Key + "'>" + data_table_head.option[o].Value + "</option>"
+                            filter_html += "<option " + selected_dd + " data-value='" + data_table_head.option[o].Key + "'>" + data_table_head.option[o].Value + "</option>"
                         }
                         // filter_html += filter_html+="<input type='text' class='form-control' name='"+data_table_head.name+"' />";
                         filter_html += "</select></div>";
