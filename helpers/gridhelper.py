@@ -149,10 +149,14 @@ class SGridHelper:
         self.response_format["paginate"]["page_index"] = self.page_no
 
         row_list = []
+        # row_keys = []
 
         for item in query:
             row_keys = []
+            row_id = 0
             for key in self.row_skeleton:
+                if key['name'] == "id":
+                    row_id = item.id  # eval("item." + key["name"])
                 row_keys.append(
                     {
                         "name": key["name"],
@@ -161,7 +165,15 @@ class SGridHelper:
                         "visible": key["visible"]
                     }
                 )
+            row_keys.append({
+                "name": "Action",
+                "type": "Action",
+                "value": row_id,
+                "visible": "Action"
+            })
+
             row_list.append(row_keys)
+
         self.response_format["value"] = row_list
 
         return self.response_format

@@ -38,9 +38,9 @@ the_sgrid = {
                 trigger_ajax_call();
             });
 
-            //filtering
-            $(the_sgrid.table_id + " .start-filter").click(function () {
-                var selector = $(the_sgrid.table_id + " .filter-container");
+            function trigger_filter(){
+                 // alert("watch out");
+                 var selector = $(the_sgrid.table_id + " .filter-container");
 
                 sortable_field = params.sort_field;
                 selector.each(function (index, item) {
@@ -55,6 +55,16 @@ the_sgrid = {
                 });
 
                 trigger_ajax_call();
+            }
+
+            //filtering
+            $(the_sgrid.table_id + " .start-filter").click(function () {
+                trigger_filter();
+            });
+
+            $(the_sgrid.table_id + " .grid_item_delete").on('click', function () {
+                trigger_filter();
+
             });
 
             $(the_sgrid.table_id + " .reset-filter").click(function () {
@@ -144,6 +154,7 @@ the_sgrid = {
         if (data.hasOwnProperty("value")) {
 
             var header_len = data.table_header.length;
+            console.log(data.value)
             var row_len = data.value.length;
             var sortable = "";
             var sortable_background = "";
@@ -264,10 +275,21 @@ the_sgrid = {
             for (var b = 0; b < row_len; b++) {
 
                 var td = "";
-
+                // console.log(data.value[b])
                 for (var i = 0; i < data.value[b].length; i++) {
-                    if (data.value[b][i].visible == true) {
+                    // console.log(data.value[b][i].visible)
+                    if (data.value[b][i].visible === true) {
+
                         td += "<td>" + data.value[b][i].value + "</td>";
+
+                    } else if (data.value[b][i].visible == "Action") {
+                        var id = data.value[b][i].value;
+                        var href = location.href.replace(/#/, "");
+                        var url = location.href + "/" + id + "/edit";
+                        var action_html = "<a href='" + url + "'>Edit</a>";
+                        url = location.href + "/" + id + "/edit";
+                        action_html += " | <a class='grid_item_delete' data-url='" + url + "' href='javascript:void()'>Delete</a>";
+                        td += "<td>" + action_html + "</td>";
                     }
                 }
                 tr = tr + "<tr>" + td + "</tr>";
@@ -329,7 +351,7 @@ the_sgrid = {
 
         }
 
-        filter_html = "<div class='sgrid filters'><div><label><a class='show_filters' href='javascript:void(0);'>Show Filters</a></label></div><div class='filter_items'>"+ filter_html +"";
+        filter_html = "<div class='sgrid filters'><div><label><a class='show_filters' href='javascript:void(0);'>Show Filters</a></label></div><div class='filter_items'>" + filter_html + "";
 
         filter_html += "<div class='filter-container'><button class='start-filter form-control btn btn-primary btn-md'>Filter</button>"
         filter_html += "<button class='reset-filter form-control btn btn-primary btn-md'>Reset</button></div></div></div>";
@@ -352,26 +374,27 @@ the_sgrid = {
          history.pushState({}, document.title, data.meta.url+"?"+str)
          }*/
         the_sgrid.showFilters();
+        //the_sgrid.gridItemDelete();
     },
-    validateDateOnType:function (obj) {
+    validateDateOnType: function (obj) {
         // alert(obj.value)
-        if(obj.value.length>0&&!isValidDate(obj.value)){
+        if (obj.value.length > 0 && !isValidDate(obj.value)) {
             alert("Invalid Date format!\nCorrect format is YYYY-MM-DD.");
             obj.value = '';
             obj.focus()
         }
     },
-    showFilters:function () {
-        $(".show_filters").on('click', function () {
+    showFilters: function () {
+        $(the_sgrid.table_id + " .show_filters").on('click', function () {
             //alert($(this).text());
-            if($(this).text()=="Show Filters"){
+            if ($(this).text() == "Show Filters") {
                 $(".filter_items").show();
                 $(this).text("Hide Filters");
-            }else{
+            } else {
                 $(".filter_items").hide();
                 $(this).text("Show Filters");
             }
         })
-    }
+    },
 
 }
