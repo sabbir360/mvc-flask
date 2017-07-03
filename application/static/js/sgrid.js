@@ -62,8 +62,14 @@ the_sgrid = {
                 trigger_filter();
             });
 
+            //delete trigger
             $(the_sgrid.table_id + " .grid_item_delete").on('click', function () {
-                trigger_filter();
+
+                // params.page_index = $(this).attr("data-page");
+                sortable_field = params.sort_field;
+                trigger_ajax_call();
+
+                // trigger_filter();
 
             });
 

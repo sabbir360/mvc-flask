@@ -135,7 +135,7 @@ class SGridHelper:
             self.response_format["meta"]["params"]["item_per_page"] = self.item_per_page
 
         else:
-            self.total_rows = self.response_format["meta"]["params"]["page_size"]
+            self.total_rows = self.query_builder(return_count=True)  # self.response_format["meta"]["params"]["page_size"]
             self.response_format["meta"]["params"]["page_index"] = self.page_no
             self.item_per_page = self.response_format["meta"]["params"]["item_per_page"]
 
