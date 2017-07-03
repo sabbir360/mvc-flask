@@ -20,7 +20,7 @@ class User(BaseModel):
     role = CharField(default="User")
 
     def user_role_combo(self):
-        user_roles = []
+        user_roles = [{"Key": "", "Value": ""}]
         user_role_dict = self.user_role_choices()
         for role in user_role_dict:
             user_roles.append({"Key": user_role_dict[role], "Value": user_role_dict[role]})

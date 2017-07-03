@@ -201,7 +201,7 @@ the_sgrid = {
                             "<option " + selected_maker("<", data, data_table_head.name) + " data-value='<'>&lt;</option>" +
                             "<option " + selected_maker(">=", data, data_table_head.name) + " data-value='>='>&gt=</option>" +
                             "<option " + selected_maker("<=", data, data_table_head.name) + " data-value='<='>&lt=</option>" +
-                            "<option " + selected_maker("=", data, data_table_head.name) + " data-value='='>=</option>" +
+                            "<option " + selected_maker("==", data, data_table_head.name) + " data-value='='>=</option>" +
                             "<option " + selected_maker("!=", data, data_table_head.name) + " data-value='!='>!=</option>";
 
                         filter_html += "</select>";
@@ -210,7 +210,7 @@ the_sgrid = {
                     } else if (data_table_head.field_type == "text") {
                         filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>";
                         filter_html += "<select class='selectbox form-control operator'>" +
-                            "<option " + selected_maker("=", data, data_table_head.name) + " data-value='='>=</option>" +
+                            "<option " + selected_maker("==", data, data_table_head.name) + " data-value='=='>=</option>" +
                             "<option " + selected_maker("like", data, data_table_head.name) + " data-value='like'>Like</option>" +
                             "<option " + selected_maker("not-like", data, data_table_head.name) + " data-value='not-like'>Not Like</option>" +
                             "<option " + selected_maker("!=", data, data_table_head.name) + " data-value='!='>!=</option>" +
@@ -220,7 +220,7 @@ the_sgrid = {
                     } else if (data_table_head.field_type == "date") {
                         filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>";
                         filter_html += "<select class='selectbox form-control operator'>" +
-                            "<option " + selected_maker("=", data, data_table_head.name) + " data-value='='>=</option>" +
+                            "<option " + selected_maker("==", data, data_table_head.name) + " data-value='='>=</option>" +
                             "<option " + selected_maker(">", data, data_table_head.name) + " data-value='>'>&gt;</option>" +
                             "<option " + selected_maker(">=", data, data_table_head.name) + " data-value='>='>&gt;=</option>" +
                             "<option " + selected_maker("<", data, data_table_head.name) + " data-value='<'>&lt;</option>" +
@@ -234,7 +234,7 @@ the_sgrid = {
                     } else if (data_table_head.field_type == "bool") {
                         filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>";
                         filter_html += "<select class='selectbox form-control operator'>" +
-                            "<option " + selected_maker("=", data, data_table_head.name) + " data-value='='>=</option>" +
+                            "<option " + selected_maker("==", data, data_table_head.name) + " data-value='='>=</option>" +
                             "<option " + selected_maker("!=", data, data_table_head.name) + " data-value='!='>!=</option>" +
                             "</select>";
                         filter_html += "<input type='text' readonly='true' value='True' class='form-control value' name='" + data_table_head.name + "' />";
@@ -242,7 +242,7 @@ the_sgrid = {
                     } else if (data_table_head.field_type == "option") {
                         filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>";
                         filter_html += "<select class='selectbox form-control operator'>" +
-                            "<option " + selected_maker("=", data, data_table_head.name) + " data-value='='>=</option>" +
+                            "<option " + selected_maker("==", data, data_table_head.name) + " data-value='='>=</option>" +
                             "<option " + selected_maker("!=", data, data_table_head.name) + " data-value='!='>!=</option>" +
                             "</select>";
                         filter_html += "<select name='" + data_table_head.name + "' class='selectbox form-control value'>"
@@ -278,7 +278,7 @@ the_sgrid = {
         } else if (data.hasOwnProperty("td")) {
             tr = "<td>" + data.td + "</td>";
         } else {
-            tr = "<td>Seems something went wrong! Check Console.</td>";
+            tr = "<td>Seems something went wrong! Check Console. <a href='javascript:location.reload()'>Reload</a></td>";
             console.log(data);
             console.log("Load table is incomplete. SGRID...")
         }

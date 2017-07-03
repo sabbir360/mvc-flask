@@ -2,6 +2,8 @@ from hashlib import sha512
 from functools import wraps
 from flask import session, abort
 
+from helpers.generic import set_message, FLASH_MESSAGE_WARNING
+
 # sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../application/mod_authentication")
 
 import application
@@ -31,16 +33,22 @@ class LoginHelper:
     def __init__(self, username, password):
         user_model = application.mod_authentication.models.User
         password_helper = PasswordHelper()
-        user = user_model().get(
-            user_model.email == username)
+        try:
+            user = user_model().get(
+                user_model.email == username)
 
-        # and user_model.password == password_helper.get_hash(password)
-        if user and user.password == password_helper.get_hash(password):
-            self.email = user.email
-            self.full_name = user.full_name
-            self.user_role = user.role
-            self.user_id = user.id
-            self.set_authentication()
+            # and user_model.password == password_helper.get_hash(password)
+            if user and user.password == password_helper.get_hash(password):
+                self.email = user.email
+                self.full_name = user.full_name
+                self.user_role = user.role
+                self.user_id = user.id
+                self.set_authentication()
+        except user_model.DoesNotExist:
+            set_message("Incorrect Username/Password", FLASH_MESSAGE_WARNING)
+        except Exception as ex:
+            print(str(ex))
+            # set_message(ex., FLASH_MESSAGE_WARNING)
 
     def set_authentication(self):
         session['logged_in'] = dict(email=self.email, user_role=self.user_role,

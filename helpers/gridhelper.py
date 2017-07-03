@@ -64,22 +64,54 @@ class SGridHelper:
         self.response_format = resp
         # return resp
 
-    def query_builder(self, return_count=False):
+    def filter_builder(self):
+        # if custom: return custom
+        model = self.model.select()
+        request_arg = request.args
+        query_cond = []
+        for search_key in self.response_format["table_header"]:
+            search_value = search_key["name"] + "[val]"
+            search_op = search_key["name"] + "[op]"
+            if search_value in request_arg and request_arg.get(search_key["name"] + "[val]"):
+                opr = request_arg.get(search_op)
+                val = request_arg.get(search_key["name"] + "[val]")
+                if request_arg.get(search_op) == "not-like":
+                    query_cond.append("~(self.model." + search_key["name"] + ".contains('" + val + "'))")
+                    # pass
 
+                elif request_arg.get(search_op) == "like":
+                    query_cond.append("self.model." + search_key["name"] + ".contains('" + val + "')")
 
+                else:
+                    try:
+                        if int(val) * 1 < 0 or int(val) * 1 > 0:
+                            query_cond.append("self.model." + search_key["name"] + opr + val)
+                        else:
+                            query_cond.append("self.model." + search_key["name"] + opr + "'" + val + "'")
+                    except:
+                        query_cond.append("self.model." + search_key["name"] + opr + "'" + val + "'")
 
+        build_filter = ", ".join(query_cond)
+        if build_filter:
+            # import pdb; pdb.set_trace()
+            return eval("model.where(" + build_filter + ")")
+        return model
+
+    def query_builder(self, return_count=False, custom=None):
+        if custom is None:
+            model = self.filter_builder()
         if return_count:
-            return self.model.select().count()
+            return model.count()
 
         sort_field = request.args.get("sort_field", self.default_sort_field)
         sort_value = request.args.get("sort_type", self.sort_type)
 
         if sort_field and sort_value and getattr(self.model, sort_field) \
                 and (sort_value == "asc" or sort_value == "desc"):
-            return self.model.select().order_by(
+            return model.order_by(
                 eval("self.model." + sort_field + "." + sort_value + "()"))
         else:
-            return self.model.select()
+            return model
         return None
 
     def paginated_query(self):

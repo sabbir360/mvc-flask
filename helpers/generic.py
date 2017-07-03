@@ -1,6 +1,11 @@
 from flask import flash
 
 
+FLASH_MESSAGE_INFO = "info"
+FLASH_MESSAGE_ERROR = "error"
+FLASH_MESSAGE_WARNING = "warning"
+
+
 def set_template(prefix, name, ext=".html"):
     """
     This will return a safe template file path based on  given params
