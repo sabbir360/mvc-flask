@@ -65,3 +65,10 @@ ul.errors {
 .sgrid.filters .value{
     margin-top: 3px;
 }
+.sgrid .filter_items{
+    display: none;
+}
+
+.sgrid .start-filter, .sgrid .reset{
+    display: inline!important;
+}

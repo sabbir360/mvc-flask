@@ -201,7 +201,7 @@ the_sgrid = {
                             "<option " + selected_maker("<", data, data_table_head.name) + " data-value='<'>&lt;</option>" +
                             "<option " + selected_maker(">=", data, data_table_head.name) + " data-value='>='>&gt=</option>" +
                             "<option " + selected_maker("<=", data, data_table_head.name) + " data-value='<='>&lt=</option>" +
-                            "<option " + selected_maker("==", data, data_table_head.name) + " data-value='='>=</option>" +
+                            "<option " + selected_maker("==", data, data_table_head.name) + " data-value='=='>=</option>" +
                             "<option " + selected_maker("!=", data, data_table_head.name) + " data-value='!='>!=</option>";
 
                         filter_html += "</select>";
@@ -220,7 +220,7 @@ the_sgrid = {
                     } else if (data_table_head.field_type == "date") {
                         filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>";
                         filter_html += "<select class='selectbox form-control operator'>" +
-                            "<option " + selected_maker("==", data, data_table_head.name) + " data-value='='>=</option>" +
+                            "<option " + selected_maker("==", data, data_table_head.name) + " data-value='=='>=</option>" +
                             "<option " + selected_maker(">", data, data_table_head.name) + " data-value='>'>&gt;</option>" +
                             "<option " + selected_maker(">=", data, data_table_head.name) + " data-value='>='>&gt;=</option>" +
                             "<option " + selected_maker("<", data, data_table_head.name) + " data-value='<'>&lt;</option>" +
@@ -229,12 +229,12 @@ the_sgrid = {
                             "<option " + selected_maker("not-like", data, data_table_head.name) + " data-value='not-like'>Not Like</option>" +
                             "<option " + selected_maker("!=", data, data_table_head.name) + " data-value='!='>!=</option>" +
                             "</select>";
-                        filter_html += "<input placeholder='YYYY-MM-DD' value='" + filter_input_value_set(data, data_table_head.name) + "' type='text' class='form-control value' name='" + data_table_head.name + "' />";
+                        filter_html += "<input onblur='the_sgrid.validateDateOnType(this)' placeholder='YYYY-MM-DD' value='" + filter_input_value_set(data, data_table_head.name) + "' type='text' class='form-control value' name='" + data_table_head.name + "' />";
                         filter_html += "</div>";
                     } else if (data_table_head.field_type == "bool") {
                         filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>";
                         filter_html += "<select class='selectbox form-control operator'>" +
-                            "<option " + selected_maker("==", data, data_table_head.name) + " data-value='='>=</option>" +
+                            "<option " + selected_maker("==", data, data_table_head.name) + " data-value='=='>=</option>" +
                             "<option " + selected_maker("!=", data, data_table_head.name) + " data-value='!='>!=</option>" +
                             "</select>";
                         filter_html += "<input type='text' readonly='true' value='True' class='form-control value' name='" + data_table_head.name + "' />";
@@ -242,7 +242,7 @@ the_sgrid = {
                     } else if (data_table_head.field_type == "option") {
                         filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>";
                         filter_html += "<select class='selectbox form-control operator'>" +
-                            "<option " + selected_maker("==", data, data_table_head.name) + " data-value='='>=</option>" +
+                            "<option " + selected_maker("==", data, data_table_head.name) + " data-value='=='>=</option>" +
                             "<option " + selected_maker("!=", data, data_table_head.name) + " data-value='!='>!=</option>" +
                             "</select>";
                         filter_html += "<select name='" + data_table_head.name + "' class='selectbox form-control value'>"
@@ -329,9 +329,10 @@ the_sgrid = {
 
         }
 
-        filter_html = "<div class='sgrid filters'><div><label>Filters:</label></div>" + filter_html;
+        filter_html = "<div class='sgrid filters'><div><label><a class='show_filters' href='javascript:void(0);'>Show Filters</a></label></div><div class='filter_items'>"+ filter_html +"";
+
         filter_html += "<div class='filter-container'><button class='start-filter form-control btn btn-primary btn-md'>Filter</button>"
-        filter_html += "<button class='reset-filter form-control btn btn-primary btn-md'>Reset</button></div></div>";
+        filter_html += "<button class='reset-filter form-control btn btn-primary btn-md'>Reset</button></div></div></div>";
 
         $(the_sgrid.table_id).html('<div class="sgrid-loader">Loading....</div>' + filter_html + final_table);
         the_sgrid.initialize();
@@ -350,6 +351,27 @@ the_sgrid = {
          }).join('&');
          history.pushState({}, document.title, data.meta.url+"?"+str)
          }*/
+        the_sgrid.showFilters();
+    },
+    validateDateOnType:function (obj) {
+        // alert(obj.value)
+        if(obj.value.length>0&&!isValidDate(obj.value)){
+            alert("Invalid Date format!\nCorrect format is YYYY-MM-DD.");
+            obj.value = '';
+            obj.focus()
+        }
+    },
+    showFilters:function () {
+        $(".show_filters").on('click', function () {
+            //alert($(this).text());
+            if($(this).text()=="Show Filters"){
+                $(".filter_items").show();
+                $(this).text("Hide Filters");
+            }else{
+                $(".filter_items").hide();
+                $(this).text("Show Filters");
+            }
+        })
     }
 
 }

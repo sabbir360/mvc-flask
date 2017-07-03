@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block datagrid %}
+<script type="text/javascript" src="{{ url_for("static", filename="js/validators.js") }}"></script>
 <script type="text/javascript" src="{{ url_for("static", filename="js/sgrid.js") }}"></script>
 <script type="text/javascript">
     {% autoescape false %}
@@ -8,6 +9,7 @@
     $(document).ready(function () {
         the_sgrid.table_id = "#jsGrid";
         the_sgrid.initialize();
+        //the_sgrid.showFilters();
         {#the_sgrid.table_header = [
                         {"title": "Name", "sortable": true, "name": "full_name",
                          "asc": "asc"},
