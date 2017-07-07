@@ -1,4 +1,4 @@
-from json import dumps
+# from json import dumps
 from flask import Blueprint, render_template, abort, jsonify, request
 from helpers.generic import set_template
 from helpers.loginhelper import login_check, LoginHelper
@@ -47,3 +47,17 @@ def manage_user():
 
         return jsonify(grid_helper.paginated_query())
     return render_template(set_template(template_prefix, "manage-user"))
+
+
+@bp_app.route("/manage-user/<int:model_id>/delete", methods=["POST"])
+@login_check
+def manage_user_delete(model_id):
+    try:
+        user = User.get(User.id == model_id)
+        user.delete_instance()
+        return jsonify({"status": 1, "message": "User deleted successfully."})
+    except User.DoesNotExist:
+        return jsonify({"status": 0, "message": "User not found."})
+    except Exception as ex:
+        print(str(ex))
+        return jsonify({"status": 0, "message": "A bad mistake done while deleting."})

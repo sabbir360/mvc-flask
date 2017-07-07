@@ -12,7 +12,7 @@ the_sgrid = {
 
         var sortable_field = "";
         var raw_meta = $(the_sgrid.table_id + " .sgrid-meta").val();
-        if (raw_meta != undefined) {
+        if (raw_meta !== undefined) {
             var meta = JSON.parse(raw_meta);
             var params = meta.params;
 
@@ -38,10 +38,11 @@ the_sgrid = {
                 trigger_ajax_call();
             });
 
-            function trigger_filter(){
-                 // alert("watch out");
-                 var selector = $(the_sgrid.table_id + " .filter-container");
+            // prepare filter
+            function trigger_filter() {
+                var selector = $(the_sgrid.table_id + " .filter-container");
 
+                // search query builder
                 sortable_field = params.sort_field;
                 selector.each(function (index, item) {
                     var name = $(item).find(".value").attr("name");
@@ -57,26 +58,45 @@ the_sgrid = {
                 trigger_ajax_call();
             }
 
-            //filtering
+            //filtering trigger
             $(the_sgrid.table_id + " .start-filter").click(function () {
                 trigger_filter();
             });
 
             //delete trigger
             $(the_sgrid.table_id + " .grid_item_delete").on('click', function () {
-
-                // params.page_index = $(this).attr("data-page");
-                sortable_field = params.sort_field;
-                trigger_ajax_call();
-
+                var delete_confirm = confirm("Are you sure about deleting this record?");
+                if (delete_confirm == true) {
+                    $(the_sgrid.table_id + " .sgrid-loader").show();
+                    var url = $(this).attr("data-url");
+                    var id = $(this).attr("data-id");
+                    $.post(url, {model_id: id}).done(function (data) {
+                        console.log(data);
+                        // data = JSON.parse(data);
+                        if (data.status && data.status == 1) {
+                            $(the_sgrid.table_id + " .sgrid-loader").hide();
+                            sortable_field = params.sort_field;
+                            trigger_ajax_call();
+                            alert(data.message);
+                        } else {
+                            alert(data.message);
+                            $(the_sgrid.table_id + " .sgrid-loader").hide();
+                        }
+                    }).fail(function () {
+                        alert("Delete call failed. Contact support for more info.");
+                        $(the_sgrid.table_id + " .sgrid-loader").hide();
+                    });
+                }
                 // trigger_filter();
 
             });
 
+            // reset search filters
             $(the_sgrid.table_id + " .reset-filter").click(function () {
                 window.location.reload();
             });
 
+            // this will call filter by gathering available params
             function trigger_ajax_call() {
 
                 params.sort_field = sortable_field;
@@ -87,6 +107,7 @@ the_sgrid = {
             }
 
             // set operator and value, for each filter result.
+            // combo box
             var prev_select = "";
 
             $(the_sgrid.table_id + " .operator").on('focus', function () {
@@ -136,6 +157,7 @@ the_sgrid = {
         var tr = "";
         var filter_html = "";
 
+        // combo box select marker
         function selected_maker(operator, data, name) {
             if (data.meta.params.hasOwnProperty(name + "[op]")) {
                 // op = data.params[name].op;
@@ -148,6 +170,7 @@ the_sgrid = {
             return "";
         }
 
+        // filter input value set
         function filter_input_value_set(data, name) {
 
             if (data.meta.params[name + "[val]"] != undefined) {
@@ -160,7 +183,7 @@ the_sgrid = {
         if (data.hasOwnProperty("value")) {
 
             var header_len = data.table_header.length;
-            console.log(data.value)
+            // console.log(data.value)
             var row_len = data.value.length;
             var sortable = "";
             var sortable_background = "";
@@ -293,8 +316,8 @@ the_sgrid = {
                         var href = location.href.replace(/#/, "");
                         var url = location.href + "/" + id + "/edit";
                         var action_html = "<a href='" + url + "'>Edit</a>";
-                        url = location.href + "/" + id + "/edit";
-                        action_html += " | <a class='grid_item_delete' data-url='" + url + "' href='javascript:void()'>Delete</a>";
+                        url = location.href + "/" + id + "/delete";
+                        action_html += " | <a class='grid_item_delete' data-id='" + id + "' data-url='" + url + "' href='javascript:void()'>Delete</a>";
                         td += "<td>" + action_html + "</td>";
                     }
                 }
@@ -337,10 +360,10 @@ the_sgrid = {
                         page_activate = "active"
                     }
                     if (total_pages != current_page) {
-                        end_page_html = "<li><a class='glyphicon glyphicon-fast-forward' data-page='" + total_pages + "' href='javascript:void(0);'> </a></li>";
+                        end_page_html = "<li><a class='glyphicon glyphicon-fast-forward' style='top: 0' data-page='" + total_pages + "' href='javascript:void(0);'> </a></li>";
                     }
                     if (1 != current_page) {
-                        start_page_html = "<li><a class='glyphicon glyphicon-fast-backward' data-page='1' href='javascript:void(0);'> </a></li>";
+                        start_page_html = "<li><a class='glyphicon glyphicon-fast-backward' style='top: 0' data-page='1' href='javascript:void(0);'> </a></li>";
                     }
                     pages_html += "<li class='page-number " + page_activate + "'><a data-page='" + p + "' href='javascript:void(0);'>" + p.toString() + "</a></li>";
                     if (page_count == 10) {
@@ -350,8 +373,8 @@ the_sgrid = {
 
                 //for filter
 
-                final_table = final_table + '<ul class="pagination">' + start_page_html + pages_html + end_page_html + '</ul>';
-
+                final_table = final_table + '<div class="container"><div class="col-md-8 text-left"><ul class="pagination" style="margin: 0">' + start_page_html + pages_html + end_page_html + '</ul>';
+                final_table = final_table + "</div><div class='col-md-4 text-right'>Showing page <span class='badge'>"+current_page+" </span> of <span class='badge'>"+total_pages+"</span> | Total records <span class='badge'>"+total_rows+"</span></div></div>";
             }
 
 

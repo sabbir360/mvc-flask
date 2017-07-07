@@ -76,11 +76,11 @@ class SGridHelper:
                 opr = request_arg.get(search_op)
                 val = request_arg.get(search_key["name"] + "[val]")
                 if request_arg.get(search_op) == "not-like":
-                    query_cond.append("~(self.model." + search_key["name"] + ".contains('" + val + "'))")
+                    query_cond.append("~(self.model." + search_key["name"] + ".contains('%" + val + "%'))")
                     # pass
 
                 elif request_arg.get(search_op) == "like":
-                    query_cond.append("self.model." + search_key["name"] + ".contains('" + val + "')")
+                    query_cond.append("self.model." + search_key["name"] + ".contains('%" + val + "%')")
 
                 else:
                     try:
@@ -93,7 +93,6 @@ class SGridHelper:
 
         build_filter = ", ".join(query_cond)
         if build_filter:
-            # import pdb; pdb.set_trace()
             return eval("model.where(" + build_filter + ")")
         return model
 
@@ -135,7 +134,8 @@ class SGridHelper:
             self.response_format["meta"]["params"]["item_per_page"] = self.item_per_page
 
         else:
-            self.total_rows = self.query_builder(return_count=True)  # self.response_format["meta"]["params"]["page_size"]
+            self.total_rows = self.query_builder(return_count=True)
+            # self.response_format["meta"]["params"]["page_size"]
             self.response_format["meta"]["params"]["page_index"] = self.page_no
             self.item_per_page = self.response_format["meta"]["params"]["item_per_page"]
 
