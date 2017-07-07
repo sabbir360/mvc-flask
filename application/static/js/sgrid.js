@@ -156,6 +156,7 @@ the_sgrid = {
         var header = "";
         var tr = "";
         var filter_html = "";
+        var filter_top_section_html = "";
 
         // combo box select marker
         function selected_maker(operator, data, name) {
@@ -315,9 +316,9 @@ the_sgrid = {
                         var id = data.value[b][i].value;
                         var href = location.href.replace(/#/, "");
                         var url = location.href + "/" + id + "/edit";
-                        var action_html = "<a href='" + url + "'>Edit</a>";
+                        var action_html = "<a href='" + url + "'><span class='glyphicon glyphicon-pencil'></span></a>";
                         url = location.href + "/" + id + "/delete";
-                        action_html += " | <a class='grid_item_delete' data-id='" + id + "' data-url='" + url + "' href='javascript:void()'>Delete</a>";
+                        action_html += " | <a class='grid_item_delete' data-id='" + id + "' data-url='" + url + "' href='javascript:void()'><span class='glyphicon glyphicon-trash'></span></a>";
                         td += "<td>" + action_html + "</td>";
                     }
                 }
@@ -380,30 +381,24 @@ the_sgrid = {
 
         }
 
-        filter_html = "<div class='sgrid filters'><div><label><a class='show_filters' href='javascript:void(0);'>Show Filters</a></label></div><div class='filter_items'>" + filter_html + "";
-
+        filter_top_section_html = "<div>" +
+                "<label><a class='show_filters' href='javascript:void(0);' data-attr='show'><span class='glyphicon glyphicon-filter'></span>&nbsp;Show Filters</a></label>" +
+                "&nbsp;&nbsp;<label><a class='add_new' href='#'><span class='glyphicon glyphicon-plus-sign'></span>&nbsp;Add</a></label>"+
+            "</div>";
+        filter_html = "<div class='sgrid filters'>"+filter_top_section_html+"<div class='filter_items'>" + filter_html + "";
+        //filter_html = "<div class='sgrid filters'><div><label><a class='show_filters' data-attr='show' href='javascript:void(0);'>Show Filters</a></label></div><div class='filter_items'>" + filter_html + "";
         filter_html += "<div class='filter-container'><button class='start-filter form-control btn btn-primary btn-md'>Filter</button>"
-        filter_html += "<button class='reset-filter form-control btn btn-primary btn-md'>Reset</button></div></div></div>";
+        filter_html += "<button class='reset-filter form-control btn btn-primary btn-md'>Reset</button></div></div>";
 
         $(the_sgrid.table_id).html('<div class="sgrid-loader">Loading....</div>' + filter_html + final_table);
         the_sgrid.initialize();
         $(the_sgrid.table_id + " .sgrid-loader").hide();
 
-        //this part for URL push
-        /*if (data.hasOwnProperty("meta")) {
-         var str = Object.keys(data.meta.params).map(function (key) {
-         if(key=="json"){
-         return ""
-         }else{
-         return encodeURIComponent(key) + '=' + encodeURIComponent(data.meta.params[key]);
-         }
-
-
-         }).join('&');
-         history.pushState({}, document.title, data.meta.url+"?"+str)
-         }*/
+        // show filter initialization
         the_sgrid.showFilters();
-        //the_sgrid.gridItemDelete();
+
+        //add new url
+        $(the_sgrid.table_id + " .add_new").attr("href", location.href+"/add");
     },
     validateDateOnType: function (obj) {
         // alert(obj.value)
@@ -415,13 +410,12 @@ the_sgrid = {
     },
     showFilters: function () {
         $(the_sgrid.table_id + " .show_filters").on('click', function () {
-            //alert($(this).text());
-            if ($(this).text() == "Show Filters") {
+            if ($(this).attr('data-attr') == "show") {
                 $(".filter_items").show();
-                $(this).text("Hide Filters");
+                $(this).attr("data-attr", "hide");
             } else {
                 $(".filter_items").hide();
-                $(this).text("Show Filters");
+                $(this).attr("data-attr", 'show');
             }
         })
     },
