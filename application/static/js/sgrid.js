@@ -40,17 +40,32 @@ the_sgrid = {
 
             // prepare filter
             function trigger_filter() {
+
                 var selector = $(the_sgrid.table_id + " .filter-container");
 
                 // search query builder
                 sortable_field = params.sort_field;
+
                 selector.each(function (index, item) {
                     var name = $(item).find(".value").attr("name");
+
                     if (name != undefined) {
-                        params[name] = {
-                            op: $(item).find(".operator option:selected").attr("data-value"),
-                            val: $(item).find(".value").val()
+                        if (params.hasOwnProperty(name)) {
+                            console.log("Deleting duplicate... " + name);
+                            delete params[name];
                         }
+                        /*console.log($(item).find(".operator option:selected").attr("data-value"));
+                         console.log($(item).find(".value").val());*/
+                        var operator = $(item).find(".operator option:selected").attr("data-value");
+                        var value = $(item).find(".value").val();
+
+                        if (operator !== undefined && value !== undefined) {
+                            params[name] = {
+                                op: operator,
+                                val: value
+                            }
+                        }
+
 
                     }
                 });
@@ -71,8 +86,7 @@ the_sgrid = {
                     var url = $(this).attr("data-url");
                     var id = $(this).attr("data-id");
                     $.post(url, {model_id: id}).done(function (data) {
-                        console.log(data);
-                        // data = JSON.parse(data);
+
                         if (data.status && data.status == 1) {
                             $(the_sgrid.table_id + " .sgrid-loader").hide();
                             sortable_field = params.sort_field;
@@ -113,7 +127,9 @@ the_sgrid = {
             $(the_sgrid.table_id + " .operator").on('focus', function () {
                 prev_select = $(this).find("option:selected");
             }).change(function () {
-                params[$(this).parent().find(".value").attr("name") + "[op]"] = $(this).find("option:selected").attr("data-value");
+                var  item_name = $(this).parent().parent().find(".value").attr("name");
+                // params[$(this).parent().find(".value").attr("name") + "[op]"] = $(this).find("option:selected").attr("data-value");
+                params[item_name + "[op]"] = $(this).find("option:selected").attr("data-value");
             });
 
             $(the_sgrid.table_id + " .value").on('change', function () {
@@ -127,7 +143,6 @@ the_sgrid = {
         $(the_sgrid.table_id + " .sgrid-loader").show();
         // the_sgrid.initialize();
         the_sgrid.url = url;
-
         if (url) {
 
             if (!params.hasOwnProperty("json")) {
@@ -157,16 +172,17 @@ the_sgrid = {
         var tr = "";
         var filter_html = "";
         var filter_top_section_html = "";
-
+        //alert(JSON.stringify(data.meta.params))
         // combo box select marker
         function selected_maker(operator, data, name) {
+
             if (data.meta.params.hasOwnProperty(name + "[op]")) {
-                // op = data.params[name].op;
-                // console.log(data.meta.params[name]);
+
                 if (operator == data.meta.params[name + "[op]"]) {
                     return "selected='true'";
                 }
             }
+
 
             return "";
         }
@@ -174,10 +190,11 @@ the_sgrid = {
         // filter input value set
         function filter_input_value_set(data, name) {
 
-            if (data.meta.params[name + "[val]"] != undefined) {
-                // val = data.meta.params[data_table_head.name + "[val]"];
-                return data.meta.params[name + "[val]"]
-            }
+                if (data.meta.params[name + "[val]"] != undefined) {
+                    return data.meta.params[name + "[val]"]
+                }
+
+
             return "";
         }
 
@@ -231,30 +248,26 @@ the_sgrid = {
 
                 //filter generator
                 if (data_table_head.name != "Action") {
-                    if(row_counter==0){
-                        filter_html+="<div class='row'>";
+                    if (row_counter == 0) {
+                        filter_html += "<div class='row'>";
 
                     }
                     row_counter++;
-                    if(row_counter==3){
+                    if (row_counter == 3) {
                         close_div = true;
-                        row_counter=0;
+                        row_counter = 0;
                     }
-                    filter_html+="<div class='col-sm-4'>";
+                    filter_html += "<div class='col-sm-4'>";
                     if (data_table_head.field_type == "number") {
 
-                        if (data.meta.params[data_table_head.name + "[val]"] != undefined) {
-                            val = data.meta.params[data_table_head.name + "[val]"];
-                        }
-
-                        filter_html += "<div class='filter-container row'>"+
-                                        "<div><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label></div>";
+                        filter_html += "<div class='filter-container row'>" +
+                            "<div><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label></div>";
 
                         filter_html += "<div class='col-sm-6 filter-adjuster'><select class='selectbox form-control operator'>";
                         filter_html += "<option " + selected_maker(">", data, data_table_head.name) + " data-value='>'>&gt;</option>" +
                             "<option " + selected_maker("<", data, data_table_head.name) + " data-value='<'>&lt;</option>" +
-                            "<option " + selected_maker(">=", data, data_table_head.name) + " data-value='>='>&gt=</option>" +
-                            "<option " + selected_maker("<=", data, data_table_head.name) + " data-value='<='>&lt=</option>" +
+                            "<option " + selected_maker(">=", data, data_table_head.name) + " data-value='>='>&gt;=</option>" +
+                            "<option " + selected_maker("<=", data, data_table_head.name) + " data-value='<='>&lt;=</option>" +
                             "<option " + selected_maker("==", data, data_table_head.name) + " data-value='=='>=</option>" +
                             "<option " + selected_maker("!=", data, data_table_head.name) + " data-value='!='>!=</option>";
 
@@ -310,9 +323,9 @@ the_sgrid = {
                         // filter_html += filter_html+="<input type='text' class='form-control' name='"+data_table_head.name+"' />";
                         filter_html += "</select></div></div>";
                     }
-                    filter_html+="</div>";
-                    if(close_div){
-                        filter_html+="</div>";
+                    filter_html += "</div>";
+                    if (close_div) {
+                        filter_html += "</div>";
                         close_div = false;
                     }
                 }
@@ -393,17 +406,17 @@ the_sgrid = {
                 //for filter
 
                 final_table = final_table + '<div class="container"><div class="col-md-8 text-left"><ul class="pagination" style="margin: 0">' + start_page_html + pages_html + end_page_html + '</ul>';
-                final_table = final_table + "</div><div class='col-md-4 text-right'>Showing page <span class='badge'>"+current_page+" </span> of <span class='badge'>"+total_pages+"</span> | Total records <span class='badge'>"+total_rows+"</span></div></div>";
+                final_table = final_table + "</div><div class='col-md-4 text-right'>Showing page <span class='badge'>" + current_page + " </span> of <span class='badge'>" + total_pages + "</span> | Total records <span class='badge'>" + total_rows + "</span></div></div>";
             }
 
 
         }
 
         filter_top_section_html = "<div>" +
-                "<label><a class='show_filters' href='javascript:void(0);' data-attr='show'><span class='glyphicon glyphicon-filter'></span>&nbsp;Show Filters</a></label>" +
-                "&nbsp;&nbsp;<label><a class='add_new' href='#'><span class='glyphicon glyphicon-plus-sign'></span>&nbsp;Add</a></label>"+
+            "<label><a class='show_filters' href='javascript:void(0);' data-attr='show'><span class='glyphicon glyphicon-filter'></span>&nbsp;Show Filters</a></label>" +
+            "&nbsp;&nbsp;<label><a class='add_new' href='#'><span class='glyphicon glyphicon-plus-sign'></span>&nbsp;Add</a></label>" +
             "</div>";
-        filter_html = "<div class='sgrid filters'>"+filter_top_section_html+"<div class='filter_items container'>" + filter_html + "";
+        filter_html = "<div class='sgrid filters'>" + filter_top_section_html + "<div class='filter_items container'>" + filter_html + "";
         //filter_html = "<div class='sgrid filters'><div><label><a class='show_filters' data-attr='show' href='javascript:void(0);'>Show Filters</a></label></div><div class='filter_items'>" + filter_html + "";
         filter_html += "<div class='filter-container row'><div class='col-sm-6'><button class='start-filter form-control btn btn-primary btn-md'><span class='glyphicon glyphicon-search'></span>&nbsp;Filter</button></div>"
         filter_html += "<div class='col-sm-6'><button class='reset-filter form-control btn btn-primary btn-md'><span class='glyphicon glyphicon-refresh'></span>&nbsp;Reset</button></div></div></div>";
@@ -416,10 +429,10 @@ the_sgrid = {
         the_sgrid.showFilters();
 
         //add new url
-        $(the_sgrid.table_id + " .add_new").attr("href", location.href+"/add");
+        $(the_sgrid.table_id + " .add_new").attr("href", location.href + "/add");
     },
     validateDateOnType: function (obj) {
-        // alert(obj.value)
+
         if (obj.value.length > 0 && !isValidDate(obj.value)) {
             alert("Invalid Date format!\nCorrect format is YYYY-MM-DD.");
             obj.value = '';
