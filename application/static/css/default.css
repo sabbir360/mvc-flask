@@ -55,13 +55,11 @@ ul.errors {
     display: block;
 }
 .sgrid.filters .filter-container{
-    display: inline-block;
-    padding: 0 5px;
+    /*display: inline-block;*/
+    padding: 5px;
+    border-left: 1px solid lightcyan;
 }
 
-.sgrid.filters .filter-container{
-    display: inline-block;
-}
 .sgrid.filters .value{
     margin-top: 3px;
 }
@@ -71,4 +69,20 @@ ul.errors {
 
 .sgrid .start-filter, .sgrid .reset{
     display: inline!important;
+}
+/*
+
+.sgrid .row{
+    padding-bottom: 10px;
+}*/
+.sgrid  .label-filter-adjuster{
+    padding-top: 11px;
+}
+
+.sgrid .filter-adjuster{
+    padding-top: 5px;
+}
+
+.sgrid .input-filter-adjuster{
+    padding-top: 2px;
 }

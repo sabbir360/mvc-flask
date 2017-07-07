@@ -189,7 +189,9 @@ the_sgrid = {
             var sortable = "";
             var sortable_background = "";
             var sort_class = "";
-            var glyph_icon_sort = ""
+            var glyph_icon_sort = "";
+            var row_counter = 0;
+            var close_div = false;
 
 
             for (var a = 0; a < header_len; a++) {
@@ -229,15 +231,26 @@ the_sgrid = {
 
                 //filter generator
                 if (data_table_head.name != "Action") {
+                    if(row_counter==0){
+                        filter_html+="<div class='row'>";
 
+                    }
+                    row_counter++;
+                    if(row_counter==3){
+                        close_div = true;
+                        row_counter=0;
+                    }
+                    filter_html+="<div class='col-sm-4'>";
                     if (data_table_head.field_type == "number") {
 
                         if (data.meta.params[data_table_head.name + "[val]"] != undefined) {
                             val = data.meta.params[data_table_head.name + "[val]"];
                         }
 
-                        filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>"
-                        filter_html += "<select class='selectbox form-control operator'>";
+                        filter_html += "<div class='filter-container row'>"+
+                                        "<div><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label></div>";
+
+                        filter_html += "<div class='col-sm-6 filter-adjuster'><select class='selectbox form-control operator'>";
                         filter_html += "<option " + selected_maker(">", data, data_table_head.name) + " data-value='>'>&gt;</option>" +
                             "<option " + selected_maker("<", data, data_table_head.name) + " data-value='<'>&lt;</option>" +
                             "<option " + selected_maker(">=", data, data_table_head.name) + " data-value='>='>&gt=</option>" +
@@ -245,22 +258,22 @@ the_sgrid = {
                             "<option " + selected_maker("==", data, data_table_head.name) + " data-value='=='>=</option>" +
                             "<option " + selected_maker("!=", data, data_table_head.name) + " data-value='!='>!=</option>";
 
-                        filter_html += "</select>";
-                        filter_html += "<input value='" + filter_input_value_set(data, data_table_head.name) + "' type='number' class='form-control value' name='" + data_table_head.name + "' />";
+                        filter_html += "</select></div>";
+                        filter_html += "<div class='col-sm-6 input-filter-adjuster'> <input value='" + filter_input_value_set(data, data_table_head.name) + "' type='number' class='form-control value' name='" + data_table_head.name + "' /></div>";
                         filter_html += "</div>";
                     } else if (data_table_head.field_type == "text") {
-                        filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>";
-                        filter_html += "<select class='selectbox form-control operator'>" +
+                        filter_html += "<div class='filter-container row'><div><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label></div>";
+                        filter_html += "<div class='col-sm-6 filter-adjuster'><select class='selectbox form-control operator'>" +
                             "<option " + selected_maker("==", data, data_table_head.name) + " data-value='=='>=</option>" +
                             "<option " + selected_maker("like", data, data_table_head.name) + " data-value='like'>Like</option>" +
                             "<option " + selected_maker("not-like", data, data_table_head.name) + " data-value='not-like'>Not Like</option>" +
                             "<option " + selected_maker("!=", data, data_table_head.name) + " data-value='!='>!=</option>" +
-                            "</select>";
-                        filter_html += "<input value='" + filter_input_value_set(data, data_table_head.name) + "' type='text' class='form-control value' name='" + data_table_head.name + "' />";
-                        filter_html += "</div>";
+                            "</select></div>";
+                        filter_html += "<div class='col-sm-6 input-filter-adjuster'><input value='" + filter_input_value_set(data, data_table_head.name) + "' type='text' class='form-control value' name='" + data_table_head.name + "' />";
+                        filter_html += "</div></div>";
                     } else if (data_table_head.field_type == "date") {
-                        filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>";
-                        filter_html += "<select class='selectbox form-control operator'>" +
+                        filter_html += "<div class='filter-container row'><div><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label></div>";
+                        filter_html += "<div class='col-sm-6 filter-adjuster'><select class='selectbox form-control operator'>" +
                             "<option " + selected_maker("==", data, data_table_head.name) + " data-value='=='>=</option>" +
                             "<option " + selected_maker(">", data, data_table_head.name) + " data-value='>'>&gt;</option>" +
                             "<option " + selected_maker(">=", data, data_table_head.name) + " data-value='>='>&gt;=</option>" +
@@ -269,24 +282,24 @@ the_sgrid = {
                             "<option " + selected_maker("like", data, data_table_head.name) + " data-value='like'>Like</option>" +
                             "<option " + selected_maker("not-like", data, data_table_head.name) + " data-value='not-like'>Not Like</option>" +
                             "<option " + selected_maker("!=", data, data_table_head.name) + " data-value='!='>!=</option>" +
-                            "</select>";
-                        filter_html += "<input onblur='the_sgrid.validateDateOnType(this)' placeholder='YYYY-MM-DD' value='" + filter_input_value_set(data, data_table_head.name) + "' type='text' class='form-control value' name='" + data_table_head.name + "' />";
-                        filter_html += "</div>";
+                            "</select></div>";
+                        filter_html += "<div class='col-sm-6 input-filter-adjuster'><input onblur='the_sgrid.validateDateOnType(this)' placeholder='YYYY-MM-DD' value='" + filter_input_value_set(data, data_table_head.name) + "' type='text' class='form-control value' name='" + data_table_head.name + "' />";
+                        filter_html += "</div></div>";
                     } else if (data_table_head.field_type == "bool") {
-                        filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>";
-                        filter_html += "<select class='selectbox form-control operator'>" +
+                        filter_html += "<div class='filter-container row'><div><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label></div>";
+                        filter_html += "<div class='col-sm-6 filter-adjuster'><select class='selectbox form-control operator'>" +
                             "<option " + selected_maker("==", data, data_table_head.name) + " data-value='=='>=</option>" +
                             "<option " + selected_maker("!=", data, data_table_head.name) + " data-value='!='>!=</option>" +
-                            "</select>";
-                        filter_html += "<input type='text' readonly='true' value='True' class='form-control value' name='" + data_table_head.name + "' />";
-                        filter_html += "</div>";
+                            "</select></div>";
+                        filter_html += "<div class='col-sm-6 input-filter-adjuster'></div><input type='text' readonly='true' value='True' class='form-control value' name='" + data_table_head.name + "' />";
+                        filter_html += "</div></div>";
                     } else if (data_table_head.field_type == "option") {
-                        filter_html += "<div class='filter-container'><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label>";
-                        filter_html += "<select class='selectbox form-control operator'>" +
+                        filter_html += "<div class='filter-container row'><div><label for='" + data_table_head.name + "' >" + data_table_head.title + "</label></div>";
+                        filter_html += "<div class='col-sm-6 filter-adjuster'><select class='selectbox form-control operator'>" +
                             "<option " + selected_maker("==", data, data_table_head.name) + " data-value='=='>=</option>" +
                             "<option " + selected_maker("!=", data, data_table_head.name) + " data-value='!='>!=</option>" +
-                            "</select>";
-                        filter_html += "<select name='" + data_table_head.name + "' class='selectbox form-control value'>"
+                            "</select></div>";
+                        filter_html += "<div class='col-sm-6'><select name='" + data_table_head.name + "' class='selectbox form-control value'>"
                         for (var o = 0; o < data_table_head.option.length; o++) {
                             var selected_dd = "";
                             if (data_table_head.option[o].Key == data.meta.params[data_table_head.name + "[val]"]) {
@@ -295,7 +308,12 @@ the_sgrid = {
                             filter_html += "<option " + selected_dd + " data-value='" + data_table_head.option[o].Key + "'>" + data_table_head.option[o].Value + "</option>"
                         }
                         // filter_html += filter_html+="<input type='text' class='form-control' name='"+data_table_head.name+"' />";
-                        filter_html += "</select></div>";
+                        filter_html += "</select></div></div>";
+                    }
+                    filter_html+="</div>";
+                    if(close_div){
+                        filter_html+="</div>";
+                        close_div = false;
                     }
                 }
 
@@ -385,10 +403,10 @@ the_sgrid = {
                 "<label><a class='show_filters' href='javascript:void(0);' data-attr='show'><span class='glyphicon glyphicon-filter'></span>&nbsp;Show Filters</a></label>" +
                 "&nbsp;&nbsp;<label><a class='add_new' href='#'><span class='glyphicon glyphicon-plus-sign'></span>&nbsp;Add</a></label>"+
             "</div>";
-        filter_html = "<div class='sgrid filters'>"+filter_top_section_html+"<div class='filter_items'>" + filter_html + "";
+        filter_html = "<div class='sgrid filters'>"+filter_top_section_html+"<div class='filter_items container'>" + filter_html + "";
         //filter_html = "<div class='sgrid filters'><div><label><a class='show_filters' data-attr='show' href='javascript:void(0);'>Show Filters</a></label></div><div class='filter_items'>" + filter_html + "";
-        filter_html += "<div class='filter-container'><button class='start-filter form-control btn btn-primary btn-md'>Filter</button>"
-        filter_html += "<button class='reset-filter form-control btn btn-primary btn-md'>Reset</button></div></div>";
+        filter_html += "<div class='filter-container row'><div class='col-sm-6'><button class='start-filter form-control btn btn-primary btn-md'><span class='glyphicon glyphicon-search'></span>&nbsp;Filter</button></div>"
+        filter_html += "<div class='col-sm-6'><button class='reset-filter form-control btn btn-primary btn-md'><span class='glyphicon glyphicon-refresh'></span>&nbsp;Reset</button></div></div></div>";
 
         $(the_sgrid.table_id).html('<div class="sgrid-loader">Loading....</div>' + filter_html + final_table);
         the_sgrid.initialize();
@@ -411,13 +429,13 @@ the_sgrid = {
     showFilters: function () {
         $(the_sgrid.table_id + " .show_filters").on('click', function () {
             if ($(this).attr('data-attr') == "show") {
-                $(".filter_items").show();
+                $(the_sgrid.table_id + " .filter_items").show();
                 $(this).attr("data-attr", "hide");
             } else {
-                $(".filter_items").hide();
+                $(the_sgrid.table_id + " .filter_items").hide();
                 $(this).attr("data-attr", 'show');
             }
-        })
+        });
     },
 
 }
